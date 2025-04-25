@@ -1,0 +1,48 @@
+{% extends "home/base.html" %} {% block maincontent %}
+<section class="relative bg-orange-500 text-white py-20 overflow-hidden">
+  <div class="absolute inset-0">
+    <img
+      src="https://images.pexels.com/photos/1639565/pexels-photo-1639565.jpeg?auto=compress&cs=tinysrgb&w=600"
+      alt="Delicious Food"
+      class="w-full h-full object-cover opacity-30 transition-opacity duration-700 hover:opacity-50"
+    />
+  </div>
+  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1
+      class="text-4xl sm:text-5xl font-extrabold leading-tight mb-4 opacity-0 translate-y-8 animate__animated animate__fadeIn animate__delay-1s"
+    >
+      Welcome to Khana Khajana
+    </h1>
+    <p
+      class="text-lg sm:text-xl mb-8 opacity-0 translate-y-8 animate__animated animate__fadeIn animate__delay-2s"
+    >
+      Discover delicious recipes, cooking tips, and more to satisfy your taste
+      buds.
+    </p>
+    <div class="flex justify-center space-x-4">
+      <a
+        href="#recipes"
+        class="bg-white text-orange-500 px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-orange-100 transition duration-300 transform hover:scale-105"
+        >Explore Recipes</a
+      >
+      <a
+        href="#join-us"
+        class="bg-orange-700 px-6 py-3 rounded-md text-lg font-semibold shadow-md hover:bg-orange-800 transition duration-300 transform hover:scale-105"
+        >Join Us</a
+      >
+    </div>
+  </div>
+</section>
+
+<!-- Target Sections -->
+<section id="recipes" class="py-20 bg-orange-100 text-center">
+  <h2 class="text-3xl font-bold text-orange-600">Explore Our Recipes</h2>
+  <!-- Add your recipe content here -->
+</section>
+
+<section id="join-us" class="py-20 bg-orange-200 text-center">
+  <h2 class="text-3xl font-bold text-orange-600">Join Us Now</h2>
+  <!-- Add your joining form or details here -->
+</section>
+
+{% endblock maincontent %}

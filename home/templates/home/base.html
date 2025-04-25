@@ -1,0 +1,18 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="{% static 'css/main.css' %}" rel="stylesheet" />
+    <title>Khana Khajana</title>
+  </head>
+  <body>
+    <h1 class="text-3xl font-bold ">
+      {% block navbar %} {% include 'home/navbar.html' %} {% endblock navbar %}
+      {% block hero %}{% endblock hero%} 
+      {% block maincontent %}{% endblock maincontent %} 
+      {% block footer %}{%endblock footer %}
+    </h1>
+  </body>
+</html>

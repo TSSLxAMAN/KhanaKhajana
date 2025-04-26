@@ -31,7 +31,7 @@
         >
         <a
           href={% url "login" %}
-          class="{% if request.path == '/login/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+          class="{% if request.path == '/login/' or '/signup/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
           >Login</a
         >
       </div>

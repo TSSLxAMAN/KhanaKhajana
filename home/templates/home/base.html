@@ -1,18 +1,67 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="{% static 'css/main.css' %}" rel="stylesheet" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link rel="icon" href="{% static 'images/featureImage/Logo.png' %}" type="image/png"/>
     <title>Khana Khajana</title>
+
+    <style>
+      .contact-input:focus {
+        border-color: #f97316;
+        box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+      }
+      .map-container {
+        height: 300px;
+        width: 100%;
+        border-radius: 0.5rem;
+      }
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      .team-member:hover .member-overlay {
+        opacity: 1;
+      }
+      .timeline-item::before {
+        content: "";
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: #f97316;
+        left: -8px;
+        top: 0;
+      }
+      .timeline-item {
+        border-left: 2px solid #f97316;
+        padding-left: 20px;
+        margin-left: 8px;
+        position: relative;
+      }
+    </style>
   </head>
-  <body>
-    <h1 class="text-3xl font-bold ">
+
+  <body class="flex flex-col min-h-screen">
+    <!-- Navbar -->
+    <header class="w-full">
       {% block navbar %} {% include 'home/navbar.html' %} {% endblock navbar %}
-      {% block hero %}{% endblock hero%} 
-      {% block maincontent %}{% endblock maincontent %} 
-      {% block footer %}{%endblock footer %}
-    </h1>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow">
+      {% block hero %}{% endblock hero %} {% block maincontent %}
+      {% endblock maincontent %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full mt-auto">
+      {% block footer %} {% include 'home/footer.html' %} {% endblock footer %}
+    </footer>
   </body>
 </html>

@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 from .views import *
 
 urlpatterns = [
@@ -6,6 +6,8 @@ urlpatterns = [
     path('cuisine/', cuisine, name='cuisine'), 
     path('contact/', contact, name='contact'), 
     path('aboutus/', aboutus, name='aboutus'), 
-    path('login/', login, name='login'), 
-    path('signup/', signup, name='signup'), 
+    path('dashboard/', dashboard, name='dashboard'), 
+    # path('login/', login, name='login'), 
+    # path('signup/', signup, name='signup'),
+    # path('accounts/', include('allauth.urls')),
 ]

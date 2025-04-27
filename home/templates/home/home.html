@@ -1,10 +1,16 @@
 {% extends "home/base.html" %} {% block maincontent %}
 {% load static %}
-<div class="relative">
-  <div
-    class="absolute inset-0 bg-gradient-to-r from-orange-600 to-orange-500 opacity-90"
-  ></div>
-  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
+<div class="relative overflow-hidden h-screen">
+  <!-- Orange Gradient Overlay -->
+  <div class="absolute inset-0 z-10 bg-gradient-to-r from-orange-600 via-orange-500/80 to-transparent"></div>
+
+  <!-- Carousel Background Images -->
+  <div id="carousel" class="absolute inset-0 z-0 w-full h-full">
+    <div class="absolute inset-0 bg-cover bg-center transition-opacity duration-1000 opacity-100" style="background-image: url('/static/images/featureImage/food1.jpg');"></div>
+  </div>
+
+  <!-- Hero Content -->
+  <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
     <div class="md:w-3/5">
       <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight">
         Discover the Flavors of
@@ -15,14 +21,12 @@
         heritage of India's diverse regional cuisines.
       </p>
       <div class="mt-10 flex flex-col sm:flex-row gap-4">
-        <a
-        href={% url "cuisine" %}
+        <a href="{% url 'cuisine' %}"
           class="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-orange-700 bg-white hover:bg-orange-50 shadow-md transition duration-300"
         >
           Explore cuisine
         </a>
-        <a
-          href={% url "login" %}
+        <a href="{% url 'account_login' %}"
           class="inline-flex items-center justify-center px-6 py-3 border border-white text-base font-medium rounded-md text-white hover:bg-orange-600 transition duration-300"
         >
           Join now
@@ -31,6 +35,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Featured Categories -->
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -51,9 +56,11 @@
     >
       <div class="h-64 w-full overflow-hidden">
         <img
+          loading="lazy"
           src={% static 'images/featureImage/NorthIndiaFood.jpg' %}
           alt="North Indian Cuisine"
           class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+          loading="lazy"
         />
       </div>
       <div
@@ -76,6 +83,7 @@
     >
       <div class="h-64 w-full overflow-hidden">
         <img
+          loading="lazy"
           src={% static 'images/featureImage/SouthIndianFood.jpg' %}
           alt="South Indian Cuisine"
           class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
@@ -101,6 +109,7 @@
     >
       <div class="h-64 w-full overflow-hidden">
         <img
+          loading="lazy"
           src={% static 'images/featureImage/StreetFood.jpg' %}
           alt="Street Food"
           class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
@@ -126,6 +135,7 @@
     >
       <div class="h-64 w-full overflow-hidden">
         <img
+          loading="lazy"
           src={% static 'images/featureImage/DesertFood.jpg' %}
           alt="Desserts"
           class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
@@ -166,6 +176,7 @@
       >
         <div class="h-48 overflow-hidden">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/butterchicken.jpg' %}
             alt="Butter Chicken"
             class="w-full h-full object-cover"
@@ -225,6 +236,7 @@
       >
         <div class="h-48 overflow-hidden">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/masalaDose.jpeg' %}
             alt="Masala Dosa"
             class="w-full h-full object-cover"
@@ -284,6 +296,7 @@
       >
         <div class="h-48 overflow-hidden">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/paneerTikka.jpg' %}
             alt="Paneer Tikka"
             class="w-full h-full object-cover"
@@ -419,6 +432,7 @@
         <div class="flex items-center mb-4">
           <div class="flex-shrink-0">
             <img
+              loading="lazy"
               class="h-12 w-12 rounded-full"
               src={% static 'images/featureImage/testimonial3.jpg' %}
               alt="User"
@@ -485,6 +499,7 @@
         <div class="flex items-center mb-4">
           <div class="flex-shrink-0">
             <img
+              loading="lazy"
               class="h-12 w-12 rounded-full"
               src={% static 'images/featureImage/testimonial1.jpg' %}
               alt="User"
@@ -552,6 +567,7 @@
         <div class="flex items-center mb-4">
           <div class="flex-shrink-0">
             <img
+              loading="lazy"
               class="h-12 w-12 rounded-full"
               src={% static 'images/featureImage/testimonial2.jpg' %}
               alt="User"

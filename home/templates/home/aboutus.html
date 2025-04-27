@@ -17,6 +17,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
     <div>
       <img
+        loading="lazy"
         src={% static 'images/featureImage/resturant.jpg' %}
         alt="About Khana Khajana"
         class="rounded-lg shadow-lg w-full h-auto object-cover"
@@ -44,16 +45,19 @@
       <div class="flex items-center mt-8">
         <div class="flex -space-x-2 mr-4">
           <img
+            loading="lazy"
             class="inline-block h-10 w-10 rounded-full ring-2 ring-white"
             src={% static 'images/featureImage/testimonial1.jpg' %}
             alt="Founder 1"
           />
           <img
+            loading="lazy"
             class="inline-block h-10 w-10 rounded-full ring-2 ring-white"
             src={% static 'images/featureImage/testimonial2.jpg' %}
             alt="Founder 2"
           />
           <img
+            loading="lazy"
             class="inline-block h-10 w-10 rounded-full ring-2 ring-white"
             src={% static 'images/featureImage/testimonial3.jpg' %}
             alt="Founder 3"
@@ -207,6 +211,7 @@
       <div class="bg-white rounded-lg shadow-md overflow-hidden team-member">
         <div class="relative">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/chef.jpg' %}
             alt="Chef Raj Sharma"
             class="w-full h-64 object-cover"
@@ -241,6 +246,7 @@
       <div class="bg-white rounded-lg shadow-md overflow-hidden team-member">
         <div class="relative">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/director.jpeg' %}
             alt="Priya Patel"
             class="w-full h-64 object-cover"
@@ -275,6 +281,7 @@
       <div class="bg-white rounded-lg shadow-md overflow-hidden team-member">
         <div class="relative">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/chef2.jpg' %}
             alt="Chef Anita Desai"
             class="w-full h-64 object-cover"
@@ -309,6 +316,7 @@
       <div class="bg-white rounded-lg shadow-md overflow-hidden team-member">
         <div class="relative">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/tech.jpg' %}
             alt="Vikram Joshi"
             class="w-full h-64 object-cover"
@@ -372,6 +380,7 @@
         </p>
         <div class="flex items-center">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/testimonial3.jpg' %}
             alt="Customer"
             class="h-10 w-10 rounded-full mr-3"
@@ -401,6 +410,7 @@
         </p>
         <div class="flex items-center">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/testimonial2.jpg' %}
             alt="Customer"
             class="h-10 w-10 rounded-full mr-3"
@@ -430,6 +440,7 @@
         </p>
         <div class="flex items-center">
           <img
+            loading="lazy"
             src={% static 'images/featureImage/testimonial1.jpg' %}
             alt="Customer"
             class="h-10 w-10 rounded-full mr-3"
@@ -523,7 +534,7 @@
         Contact Us
       </a>
       <a
-        href={% url "login" %}
+        href={% url "account_login" %}
         class="bg-orange-700 text-white font-bold py-3 px-6 rounded-md hover:bg-orange-800 transition duration-300"
       >
         Sign Up Now

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 def homepage(request):
@@ -13,8 +14,7 @@ def aboutus(request):
 def contact(request):
     return render(request, 'home/contact.html')
 
-def login(request):
-    return render(request, 'home/login.html')
+@login_required(login_url='/accounts/login')
+def dashboard(request):
+    return render(request, 'home/dashboard.html')
 
-def signup(request):
-    return render(request, 'home/signup.html')

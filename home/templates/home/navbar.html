@@ -1,4 +1,4 @@
-<nav class="bg-gradient-to-r from-orange-400 to-orange-600 shadow-md">
+<nav class="bg-gradient-to-r from-orange-600 to-orange-400 shadow-md">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between items-center h-16">
       <div class="flex items-center">
@@ -29,11 +29,18 @@
           class="{% if request.path == '/contact/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
           >Contact</a
         >
-        <a
-          href={% url "login" %}
-          class="{% if request.path == '/login/' or '/signup/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
-          >Login</a
-        >
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard' %}"
+            class="{% if request.path == '/dashboard/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >Dashboard</a>
+            <a href="{% url 'account_logout' %}"
+            class="{% if request.path == '/accounts/login/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >Logout</a>
+        {% else %}
+            <a href="{% url 'account_login' %}"
+            class="{% if request.path == '/accounts/login/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >Login</a>
+        {% endif %}
       </div>
       <div class="md:hidden flex items-center">
         <button
@@ -79,7 +86,7 @@
       class="block text-white text-xl hover:bg-orange-400 px-4 py-2 transition duration-300 no-underline"
       >Contact</a>
     <a
-      href={% url "login" %}
+      href={% url "account_login" %}
       class="block text-white text-xl hover:bg-orange-400 px-4 py-2 transition duration-300 no-underline"
       >Login</a>
       

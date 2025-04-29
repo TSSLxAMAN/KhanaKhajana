@@ -17,7 +17,7 @@ def addCusine(request):
         form = Cuisine_Form(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Cuisine added successfully!')
+            messages.success(request, 'Cuisine added successfully!',extra_tags='cuisine')
             form = Cuisine_Form()
     else:
         form = Cuisine_Form()

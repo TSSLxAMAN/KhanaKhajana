@@ -14,21 +14,23 @@
           class="{% if request.path == '/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
           >Home</a
         >
-        <a
-          href={% url "cuisine" %}
-          class="{% if request.path == '/cuisine/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
-          >Cuisine</a
-        >
-        <a
-          href={% url "aboutus" %}
-          class="{% if request.path == '/aboutus/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
-          >About Us</a
-        >
-        <a
-          href={% url "contact" %}
-          class="{% if request.path == '/contact/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
-          >Contact</a
-        >
+        {% if not user.is_superuser  %}
+          <a
+            href={% url "cuisine" %}
+            class="{% if request.path == '/cuisine/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >Cuisine</a
+          >
+          <a
+            href={% url "aboutus" %}
+            class="{% if request.path == '/aboutus/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >About Us</a
+          >
+          <a
+            href={% url "contact" %}
+            class="{% if request.path == '/contact/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >Contact</a
+          >
+        {% endif %}
         {% if user.is_authenticated %}
             <a href="{% url 'dashboard' %}"
             class="{% if request.path == '/dashboard/' or request.path == '/adminapp/' or request.path == '/adminapp/ordersCompleted/'  or request.path == '/adminapp/pendingOrders/' or request.path == '/adminapp/addCusine/' or request.path == '/adminapp/userReview/'  or request.path == '/adminapp/revenue/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"

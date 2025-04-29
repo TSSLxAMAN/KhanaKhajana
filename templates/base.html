@@ -10,6 +10,7 @@
       rel="stylesheet"
     />
     <link rel="icon" href="{% static 'images/featureImage/Logo.png' %}" type="image/png"/>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>Khana Khajana</title>
 
     <style>
@@ -50,7 +51,7 @@
   <body class="flex flex-col min-h-screen">
     <!-- Navbar -->
     <header class="w-full">
-      {% block navbar %} {% include 'home/navbar.html' %} {% endblock navbar %}
+      {% block navbar %} {% include 'navbar.html' %} {% endblock navbar %}
     </header>
 
     <!-- Main Content -->
@@ -61,7 +62,7 @@
 
     <!-- Footer -->
     <footer class="w-full mt-auto">
-      {% block footer %} {% include 'home/footer.html' %} {% endblock footer %}
+      {% block footer %} {% include 'footer.html' %} {% endblock footer %}
     </footer>
   </body>
 </html>

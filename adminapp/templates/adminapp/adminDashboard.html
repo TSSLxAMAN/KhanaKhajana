@@ -1,0 +1,208 @@
+{% extends "adminapp/adminBase.html" %} {% block admindashboard %} {% load static %}
+<div class="grid grid-cols-12 bg-orange-50 min-h-screen">
+  <!-- Main Content -->
+  <div class="col-span-12 max-h-screen overflow-auto w-full">
+    <div class="px-6 py-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm">
+          <div class="">
+            <div>
+              <h2 class="text-2xl font-bold mb-4 text-orange-800">Overview</h2>
+
+              {% comment %} Stats Card {% endcomment %}
+              <div class="grid grid-cols-4 gap-4">
+                <div class="">
+                  <div class="p-4 bg-orange-100 rounded-xl">
+                    <div
+                      class="font-bold flex text-4xl text-gray-800 leading-none"
+                    >
+                      <img
+                        src="{% static 'images/rupee.png' %}"
+                        height="35"
+                        width="35"
+                      />
+                      2500
+                    </div>
+                    <div class="mt-5">
+                      <button
+                        type="button"
+                        class="inline-flex items-center justify-center py-2 px-3 rounded-xl bg-white text-gray-800 hover:text-orange-600 text-sm font-semibold transition"
+                      >
+                        Total Revenue
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="">
+                  <div class="p-4 bg-orange-100 rounded-xl">
+                    <div
+                      class="font-bold text-4xl text-gray-800 leading-none flex"
+                    >
+                      <img
+                        src="{% static 'images/Done.png' %}"
+                        height="12"
+                        width="32"
+                      />
+                      60
+                    </div>
+                    <div class="mt-5">
+                      <button
+                        type="button"
+                        class="inline-flex items-center justify-center py-2 px-3 rounded-xl bg-white text-gray-800 hover:text-orange-600 text-sm font-semibold transition"
+                      >
+                        Completed Orders
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="">
+                  <div class="p-4 bg-orange-100 rounded-xl">
+                    <div
+                      class="font-bold text-4xl flex text-gray-800 leading-none"
+                    >
+                      <img
+                        src="{% static 'images/pending.png' %}"
+                        height="35"
+                        width="35"
+                      />
+                      40
+                    </div>
+                    <div class="mt-5">
+                      <button
+                        type="button"
+                        class="inline-flex items-center justify-center py-2 px-3 rounded-xl bg-white text-gray-800 hover:text-orange-600 text-sm font-semibold transition"
+                      >
+                        Pending Orders
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="">
+                  <div class="p-4 bg-orange-100 rounded-xl">
+                    <div
+                      class="font-bold text-4xl flex text-gray-800 leading-none"
+                    >
+                      <img
+                        src="{% static 'images/cusine.png' %}"
+                        height="35"
+                        width="35"
+                      />
+                      15
+                    </div>
+                    <div class="mt-5">
+                      <button
+                        type="button"
+                        class="inline-flex items-center justify-center py-2 px-3 rounded-xl bg-white text-gray-800 hover:text-orange-600 text-sm font-semibold transition"
+                      >
+                        Total Cusine
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {% comment %} Monthly Subscription {% endcomment %}
+              <div class="grid grid-cols-4 gap-4 mt-3">
+                <div class="col-span-2">
+                  <div
+                    class="p-4 bg-gradient-to-r from-orange-600 to-orange-400 rounded-xl text-white"
+                  >
+                    <div class="font-bold text-xl leading-none">
+                      Monthly Orders - June
+                    </div>
+                    <div class="mt-2">150 orders this month</div>
+                  </div>
+                </div>
+                <div class="col-span-2">
+                  <div
+                    class="p-4 bg-gradient-to-r from-orange-600 to-orange-400 rounded-xl text-white"
+                  >
+                    <div class="font-bold text-xl leading-none">
+                      Monthly New Users - June
+                    </div>
+                    <div class="mt-2">15 new users this month</div>
+                  </div>
+                </div>
+              </div>
+
+              <p class="text-2xl font-bold mb-4 text-orange-800 mt-4">
+                This Month Order Overview - June
+              </p>
+              {% comment %} Chart {% endcomment %}
+              <div
+                class="w-full max-w-4xl mx-auto p-4 bg-white rounded-xl shadow"
+              >
+                <canvas id="ordersChart" class="w-full h-64"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Generate day labels like "01 Apr", "02 Apr", ..., "30 Apr"
+    function generateCurrentMonthDayLabels() {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = today.getMonth(); // 0-indexed
+
+      // Get number of days in the current month
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+      const labels = [];
+      for (let day = 1; day <= daysInMonth; day++) {
+        const date = new Date(year, month, day);
+        const label = date.toLocaleDateString("en-GB", {
+          day: "2-digit",
+          month: "short",
+        });
+        labels.push(label);
+      }
+      return labels;
+    }
+
+    const labels = generateCurrentMonthDayLabels();
+    const values = [1, 2, 4, 9];
+    const ctx = document.getElementById("ordersChart").getContext("2d");
+
+    const chart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Daily Orders",
+            data: values,
+            borderColor: "#c2410c",
+            backgroundColor: "rgba(194, 65, 12, 0.2)",
+            fill: true,
+            tension: 0.3,
+            pointRadius: 3,
+            pointHoverRadius: 5,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          title: {
+            display: true,
+            text: "Orders This Month",
+          },
+        },
+      },
+    });
+  </script>
+</div>
+{% endblock admindashboard %}

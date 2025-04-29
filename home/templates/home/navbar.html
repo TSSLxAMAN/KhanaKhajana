@@ -38,8 +38,17 @@
             >Logout</a>
         {% else %}
             <a href="{% url 'account_login' %}"
-            class="{% if request.path == '/accounts/login/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
-            >Login</a>
+            class="{% if request.path == '/accounts/login/' or request.path == '/accounts/signup/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline{% endif %}"
+            >
+            {% if request.path == '/accounts/signup/' %}
+            Sign up
+            {% elif request.path == '/accounts/login/' %}
+            Login
+            {% else %}
+            Login
+            {% endif %}
+
+            </a>
         {% endif %}
       </div>
       <div class="md:hidden flex items-center">

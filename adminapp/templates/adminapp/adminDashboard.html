@@ -7,6 +7,17 @@
         <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm">
           <div class="">
             <div>
+              {% if messages %}
+              <div class="mb-6">
+                {% for message in messages %} {% if 'cuisine_edit_success' in message.tags %}
+                <div
+                  class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %} px-4 py-3 rounded-lg mb-2"
+                >
+                  {{ message }}
+                </div>
+                {% endif %} {% endfor %}
+              </div>
+              {% endif %}
               <h2 class="text-2xl font-bold mb-4 text-orange-800">Overview</h2>
 
               {% comment %} Stats Card {% endcomment %}
@@ -128,11 +139,431 @@
               <p class="text-2xl font-bold mb-4 text-orange-800 mt-4">
                 This Month Order Overview - June
               </p>
+
               {% comment %} Chart {% endcomment %}
               <div
                 class="w-full max-w-4xl mx-auto p-4 bg-white rounded-xl shadow"
               >
                 <canvas id="ordersChart" class="w-full h-64"></canvas>
+              </div>
+
+              <p class="text-2xl font-bold mb-4 text-orange-800 mt-4">
+                Avliable Cusine
+              </p>
+
+              {% comment %} Edit Cuisine {% endcomment %}
+              <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for cuisine in cuisines %}
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                  <!-- Cuisine Image -->
+                  <div class="h-48 w-full overflow-hidden">
+                    {% if cuisine.cusine_image %}
+                    <img
+                      src="{{ cuisine.cusine_image.url }}"
+                      alt="{{ cuisine.cusine_name }}"
+                      class="w-full h-full object-cover"
+                    />
+                    {% else %}
+                    <div
+                      class="w-full h-full bg-orange-200 flex items-center justify-center"
+                    >
+                      <span class="text-orange-800">No Image</span>
+                    </div>
+                    {% endif %}
+                  </div>
+
+                  <!-- Cuisine Details -->
+                  <div class="p-4">
+                    <div class="flex justify-between items-center mb-2">
+                      <h3 class="text-lg font-bold text-gray-800">
+                        {{ cuisine.cusine_name }}
+                      </h3>
+                      <div class="flex items-center space-x-2">
+                        <span class="text-gray-700 font-bold"
+                          >₹{{ cuisine.price }}</span
+                        >
+                      </div>
+                    </div>
+
+                    <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {{ cuisine.cusine_description|truncatewords:5 }}
+                    </p>
+
+                    <div
+                      class="flex justify-between items-center text-sm text-gray-500"
+                    >
+                      <span>{{ cuisine.region }}</span>
+                      <span>{{ cuisine.time }} mins</span>
+                    </div>
+
+                    <!-- Edit Button -->
+                    <div class="mt-4 text-center">
+                      <button
+                        type="button"
+                        class="edit-cuisine-btn inline-flex items-center justify-center py-2 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition"
+                        data-cuisine-id="{{ cuisine.id }}"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-4 w-4 mr-1.5"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                          />
+                        </svg>
+                        Edit Cuisine
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                {% empty %}
+                <div
+                  class="col-span-full text-center py-12 bg-orange-50 rounded-xl"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-12 w-12 mx-auto text-orange-400 mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                    />
+                  </svg>
+                  <p class="text-lg font-semibold text-gray-700">
+                    No cuisines found
+                  </p>
+                  <p class="text-gray-500 mt-2">
+                    Add your first cuisine to get started
+                  </p>
+                  <a
+                    href="{% url 'addCusine' %}"
+                    class="mt-4 inline-flex items-center justify-center py-2 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4 mr-1.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 4v16m8-8H4"
+                      />
+                    </svg>
+                    Add New Cuisine
+                  </a>
+                </div>
+                {% endfor %}
+              </div>
+
+              {% comment %} Edit Modal Cuisine {% endcomment %}
+              <div
+                id="cuisine-modal"
+                class="hidden fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center bg-gray-900 opacity-0 pointer-events-none transition-opacity duration-500"
+              >
+                <div
+                  class="bg-white rounded-xl shadow-lg w-full max-w-4xl max-h-[90vh] overflow-y-auto transform scale-95 transition-transform duration-300"
+                >
+                  <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                      <h2
+                        id="modal-title"
+                        class="text-2xl font-bold text-orange-800"
+                      >
+                        Edit Cuisine
+                      </h2>
+                      <button
+                        type="button"
+                        id="close-modal"
+                        class="text-gray-400 hover:text-gray-500"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          class="h-6 w-6"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <form
+                      id="cuisine-form"
+                      class="space-y-6"
+                      method="POST"
+                      enctype="multipart/form-data"
+                    >
+                      {% csrf_token %}
+                      <input type="hidden" id="cuisine-id" name="cuisine_id" />
+
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Left column -->
+                        <div class="space-y-6">
+                          <div>
+                            <label
+                              for="cusine_name"
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                              >Cuisine Name</label
+                            >
+                            <input
+                              type="text"
+                              id="cusine_name"
+                              name="cusine_name"
+                              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            />
+                          </div>
+
+                          <div>
+                            <label
+                              for="cusine_description"
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                              >Description</label
+                            >
+                            <textarea
+                              id="cusine_description"
+                              name="cusine_description"
+                              rows="4"
+                              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                            ></textarea>
+                          </div>
+
+                          <div class="grid grid-cols-2 gap-4">
+                            <div>
+                              <label
+                                for="type"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Cuisine Type</label
+                              >
+                              <select
+                                id="type"
+                                name="type"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              >
+                                <option value="">Select Type</option>
+                                {% for value, label in form.type.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+
+                            <div>
+                              <label
+                                for="region"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Region</label
+                              >
+                              <select
+                                id="region"
+                                name="region"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              >
+                                <option value="">Select Region</option>
+                                {% for value, label in form.region.field.choices %}
+                                <option value="{{ value }}">{{ label }}</option>
+                                {% endfor %}
+                              </select>
+                            </div>
+                          </div>
+
+                          <div class="grid grid-cols-2 gap-4">
+                            <div>
+                              <label
+                                for="price"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Price (₹)</label
+                              >
+                              <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              />
+                            </div>
+
+                            <div>
+                              <label
+                                for="time"
+                                class="block text-sm font-medium text-gray-700 mb-1"
+                                >Preparation Time (minutes)</label
+                              >
+                              <input
+                                type="number"
+                                id="time"
+                                name="time"
+                                class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
+                              />
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Right column -->
+                        <div>
+                          <div>
+                            <label
+                              for="cusine_image"
+                              class="block text-sm font-medium text-gray-700 mb-1"
+                              >Cuisine Image</label
+                            >
+
+                            <!-- Current image preview -->
+                            <div id="current-image-container" class="mb-4">
+                              <p class="text-sm text-gray-500 mb-2">
+                                Current Image:
+                              </p>
+
+                              <img
+                                id="current-image"
+                                src=""
+                                alt="Current cuisine image"
+                                class="w-40 h-32 object-cover rounded-lg"
+                                height="150"
+                                width="100"
+                              />
+                            </div>
+                            <div id="imagePreview" class="relative hidden mt-3 mb-3">
+                              <button
+                                id="remove-image-btn"
+                                type="button"
+                                class="absolute top-0 right-0 bg-red-600 text-orange-600 rounded-full p-1 shadow hover:bg-red-700 cursor-pointer"
+                                title="Remove selected image"
+                              >
+                                &times;
+                              </button>
+                              <p class="text-sm text-gray-500 mb-2">
+                                New Image:
+                              </p>
+                              <img
+                                src=""
+                                alt="Preview"
+                                class="h-32 w-auto rounded-lg"
+                              />
+                            </div>
+                            <label
+                              for="cusine_image"
+                              class="mt-3 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 cursor-pointer"
+                            >
+                              Upload Image
+                            </label>
+                            <input
+                              id="cusine_image"
+                              name="cusine_image"
+                              type="file"
+                              class="sr-only"
+                              accept="image/*"
+                            />
+                            <p class="text-xs text-gray-500 mt-3">
+                              Leave empty to keep the current image
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Error container -->
+                      <div
+                        id="form-errors"
+                        class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 hidden"
+                      >
+                        <p class="font-bold">
+                          Please correct the following errors:
+                        </p>
+                        <ul id="error-list" class="list-disc list-inside"></ul>
+                      </div>
+
+                      <!-- Action buttons -->
+                      <div class="flex justify-between pt-4 border-gray-200">
+                        <button
+                          type="button"
+                          id="delete-cuisine-btn"
+                          class="inline-flex items-center justify-center py-2 px-4 rounded-xl bg-red-500 hover:bg-red-600 text-white text-sm font-semibold transition"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-4 w-4 mr-1.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          Delete Cuisine
+                        </button>
+
+                        <div class="space-x-3">
+                          <button
+                            type="submit"
+                            class="inline-flex items-center justify-center py-2 px-4 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-sm font-semibold transition"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              class="h-4 w-4 mr-1.5"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            Save Changes
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add New Cuisine Button -->
+              <div class="mt-8 text-center">
+                <a
+                  href="{% url 'addCusine' %}"
+                  class="inline-flex items-center justify-center py-3 px-6 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-semibold transition"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M12 4v16m8-8H4"
+                    />
+                  </svg>
+                  Add New Cuisine
+                </a>
               </div>
             </div>
           </div>
@@ -140,69 +571,162 @@
       </div>
     </div>
   </div>
+</div>
+<script>
+  // Generate day labels like "01 Apr", "02 Apr", ..., "30 Apr"
+  function generateCurrentMonthDayLabels() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth(); // 0-indexed
 
-  <script>
-    // Generate day labels like "01 Apr", "02 Apr", ..., "30 Apr"
-    function generateCurrentMonthDayLabels() {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = today.getMonth(); // 0-indexed
+    // Get number of days in the current month
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
 
-      // Get number of days in the current month
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const labels = [];
+    for (let day = 1; day <= daysInMonth; day++) {
+      const date = new Date(year, month, day);
+      const label = date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+      });
+      labels.push(label);
+    }
+    return labels;
+  }
 
-      const labels = [];
-      for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const label = date.toLocaleDateString("en-GB", {
-          day: "2-digit",
-          month: "short",
+  const labels = generateCurrentMonthDayLabels();
+  const values = [1, 2, 4, 9];
+  const ctx = document.getElementById("ordersChart").getContext("2d");
+
+  const chart = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: "Daily Orders",
+          data: values,
+          borderColor: "#c2410c",
+          backgroundColor: "rgba(194, 65, 12, 0.2)",
+          fill: true,
+          tension: 0.3,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+      plugins: {
+        legend: {
+          position: "top",
+        },
+        title: {
+          display: true,
+          text: "Orders This Month",
+        },
+      },
+    },
+  });
+</script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const csrfToken = document.querySelector(
+      "[name=csrfmiddlewaretoken]"
+    ).value;
+    const cuisineModal = document.getElementById("cuisine-modal");
+    const cuisineModalContent = cuisineModal.querySelector("div");
+
+    document.querySelectorAll(".edit-cuisine-btn").forEach((button) => {
+      button.addEventListener("click", function () {
+        const cuisineId = this.getAttribute("data-cuisine-id");
+        console.log(cuisineId);
+        openCuisineModal(cuisineId);
+      });
+    });
+
+    document.querySelectorAll("#close-modal").forEach((button) => {
+      button.addEventListener("click", function () {
+        closeModalCuisine();
+      });
+    });
+
+    function openCuisineModal(cuisine_id) {
+      cuisineModal.classList.remove("hidden");
+      cuisineModal.classList.remove("opacity-0", "pointer-events-none");
+      cuisineModal.classList.add("opacity-100");
+
+      cuisineModalContent.classList.remove("scale-95");
+      cuisineModalContent.classList.add("scale-100");
+
+      fetch(`/adminapp/editCuisine/${cuisine_id}/`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log("Fetched data:", data);
+          document.getElementById("cuisine-id").value = data.id;
+          document.getElementById("cusine_name").value = data.cusine_name;
+          document.getElementById("cusine_description").value =
+            data.cusine_description;
+          document.getElementById("price").value = data.price;
+          document.getElementById("time").value = data.time;
+          document.getElementById("region").value = data.region;
+          document.getElementById("type").value = data.type;
+          document.getElementById("current-image").src = data.cusine_image;
+        })
+        .catch((error) => {
+          console.error("Error fetching cuisine data:", error);
         });
-        labels.push(label);
-      }
-      return labels;
     }
 
-    const labels = generateCurrentMonthDayLabels();
-    const values = [1, 2, 4, 9];
-    const ctx = document.getElementById("ordersChart").getContext("2d");
+    function closeModalCuisine() {
+      const preview = document.getElementById("imagePreview");
 
-    const chart = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: labels,
-        datasets: [
-          {
-            label: "Daily Orders",
-            data: values,
-            borderColor: "#c2410c",
-            backgroundColor: "rgba(194, 65, 12, 0.2)",
-            fill: true,
-            tension: 0.3,
-            pointRadius: 3,
-            pointHoverRadius: 5,
-          },
-        ],
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-          },
-        },
-        plugins: {
-          legend: {
-            position: "top",
-          },
-          title: {
-            display: true,
-            text: "Orders This Month",
-          },
-        },
-      },
-    });
-  </script>
-</div>
+      cuisineModal.classList.add("hidden");
+      cuisineModal.classList.remove("opacity-100");
+      cuisineModal.classList.add("opacity-0", "pointer-events-none");
+
+      cuisineModalContent.classList.remove("scale-100");
+      cuisineModalContent.classList.add("scale-95");
+      preview.classList.add("hidden");
+
+    }
+  });
+</script>
+
+<script>
+  const imageInput = document.getElementById("cusine_image");
+  const preview = document.getElementById("imagePreview");
+  const previewImg = preview.querySelector("img");
+  const removeBtn = document.getElementById("remove-image-btn");
+
+  imageInput.onchange = function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        previewImg.src = e.target.result;
+        preview.classList.remove("hidden");
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  removeBtn.onclick = function () {
+    imageInput.value = ""; 
+    previewImg.src = ""; 
+    preview.classList.add("hidden");
+  };
+</script>
 {% endblock admindashboard %}

@@ -43,7 +43,7 @@
             <!-- Custom Toggle Switch for VEG/ALL/NON VEG -->
             <div class="relative flex items-center">
               <div
-                class="flex items-center bg-gray-200 rounded-full p-2 h-12 shadow-inner"
+                class="flex items-center bg-gray-200 rounded-full p-2 h-10 shadow-inner"
                 style="width: 300px"
               >
                 <!-- VEG Button -->
@@ -92,7 +92,7 @@
 </div>
 
 <!-- Cuisine Cards Section -->
-<div class="bg-white py-12">
+<div class="bg-white py-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Loading Section (initially hidden) -->
     <div id="loading" class="hidden justify-center items-center py-20">
@@ -166,7 +166,7 @@
           <!-- Add to Cart Button -->
           <button
             data-id="{{ cuisine.id }}"
-            class="add-to-cart-btn w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200"
+            class="add-to-cart-btn w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200 font-semibold cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -246,123 +246,67 @@
 <!-- Cart Toast Notification -->
 <div
   id="cart-toast"
-  class="hidden fixed bottom-5 right-5 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg items-center z-50"
+  class="hidden fixed bottom-5 right-5 bg-orange-500 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
 >
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    class="h-5 w-5 mr-2"
-    viewBox="0 0 20 20"
-    fill="currentColor"
-  >
-    <path
-      fill-rule="evenodd"
-      d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-      clip-rule="evenodd"
-    />
-  </svg>
-  <span>Added to cart!</span>
+  <div class="flex justify-between items-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5 mr-2"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <span>Added to cart!</span>
+  </div>
+  <hr class="mt-2" />
+  <div class="flex justify-center items-center w-full">
+    <a class="flex justify-between items-center" href="{% url "mycart" %}">
+      <p class="font-semibold text-center mt-2 mx-2">View Cart</p>
+      <img src="{% static '/images/right arrow.png' %}" height="16" width="24" class="mt-2"/>
+    </a>
+  </div>
 </div>
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    // Add to cart functionality
-    const addToCartButtons = document.querySelectorAll(".add-to-cart-btn");
-    const cartToast = document.getElementById("cart-toast");
-
-    addToCartButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-        const cuisineId = this.getAttribute("data-id");
-        // Save to cart - you'll need to implement this based on your cart system
-        // Example: sendAddToCartRequest(cuisineId);
-
-        // Show toast notification
-        cartToast.classList.remove("hidden");
-        setTimeout(() => {
-          cartToast.classList.add("hidden");
-        }, 3000);
-
-        // Change button style to indicate added to cart
-        this.classList.remove("bg-orange-600", "hover:bg-orange-700");
-        this.classList.add("bg-green-600", "hover:bg-green-700");
-        this.innerHTML = `
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                        </svg>
-                        Added to Cart
-                    `;
-
-        // Revert button after some time (optional)
-        setTimeout(() => {
-          this.classList.remove("bg-green-600", "hover:bg-green-700");
-          this.classList.add("bg-orange-600", "hover:bg-orange-700");
-          this.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                            Add to Cart
-                        `;
-        }, 5000);
-      });
-    });
-
-    // Filter button functionality
     const vegBtn = document.getElementById("veg-btn");
     const allBtn = document.getElementById("all-btn");
     const nonvegBtn = document.getElementById("nonveg-btn");
     const toggleBg = document.getElementById("toggle-bg");
 
-    // Initialize with ALL selected
     allBtn.classList.add("text-orange-600", "font-semibold");
 
     vegBtn.addEventListener("click", function () {
-      // Move background to VEG position
       toggleBg.style.left = "0";
-      toggleBg.style.backgroundColor = "#ecfdf5"; // Light green bg
-
-      // Update text colors
+      toggleBg.style.backgroundColor = "#ecfdf5";
       vegBtn.classList.add("text-green-600", "font-semibold");
       allBtn.classList.remove("text-orange-600", "font-semibold");
       nonvegBtn.classList.remove("text-red-600", "font-semibold");
-
-      // Filter functionality - show only VEG items
       filterByType("VEG");
     });
 
     allBtn.addEventListener("click", function () {
-      // Move background to ALL position
       toggleBg.style.left = "33.33%";
-      toggleBg.style.backgroundColor = "#ffffff"; // White bg
-
-      // Update text colors
+      toggleBg.style.backgroundColor = "#ffffff";
       vegBtn.classList.remove("text-green-600", "font-semibold");
       allBtn.classList.add("text-orange-600", "font-semibold");
       nonvegBtn.classList.remove("text-red-600", "font-semibold");
-
-      // Filter functionality - show all items
       filterByType("ALL");
     });
 
     nonvegBtn.addEventListener("click", function () {
-      // Move background to NON VEG position
       toggleBg.style.left = "66.66%";
-      toggleBg.style.backgroundColor = "#fef2f2"; // Light red bg
-
-      // Update text colors
+      toggleBg.style.backgroundColor = "#fef2f2";
       vegBtn.classList.remove("text-green-600", "font-semibold");
       allBtn.classList.remove("text-orange-600", "font-semibold");
       nonvegBtn.classList.add("text-red-600", "font-semibold");
 
-      // Filter functionality - show only NON VEG items
       filterByType("NON VEG");
-    });
-
-    // Search functionality
-    const searchInput = document.getElementById("search");
-
-    searchInput.addEventListener("input", function () {
-      const searchTerm = this.value.toLowerCase();
-      // Search functionality - you'll need to implement based on your requirements
-      // Example: searchCuisines(searchTerm);
     });
   });
 </script>

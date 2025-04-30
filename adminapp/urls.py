@@ -8,4 +8,5 @@ urlpatterns = [
     path('addCusine/', addCusine, name='addCusine'),
     path('userReview/', userReview, name='userReview'),
     path('revenue/', revenue, name='revenue'),
+    path('editCuisine/<uuid:cuisine_id>/', editCuisine, name='editCuisine'),
 ]

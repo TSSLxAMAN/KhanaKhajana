@@ -4,10 +4,13 @@ from .forms import Cuisine_Form
 from .models import *
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.shortcuts import get_object_or_404
 
 
 # Create your views here.
+@never_cache
+@login_required(login_url='/accounts/login')
 def adminDashboard(request):
     cuisines = Cuisine.objects.all()
 
@@ -30,13 +33,18 @@ def adminDashboard(request):
         "form": form
     })
 
-
+@never_cache
+@login_required(login_url='/accounts/login')
 def ordersCompleted(request):
     return render(request, 'adminapp/ordersCompleted.html')
 
+@never_cache
+@login_required(login_url='/accounts/login')
 def pendingOrders(request):
     return render(request, 'adminapp/pendingOrders.html')
 
+@never_cache
+@login_required(login_url='/accounts/login')
 def addCusine(request):
     if request.method == 'POST':
         form = Cuisine_Form(request.POST, request.FILES)
@@ -48,12 +56,17 @@ def addCusine(request):
         form = Cuisine_Form()
     return render(request, 'adminapp/addCusine.html', {'form': form})
 
+@never_cache
+@login_required(login_url='/accounts/login')
 def userReview(request):
     return render(request, 'adminapp/userReview.html')
 
+@never_cache
+@login_required(login_url='/accounts/login')
 def revenue(request):
     return render(request, 'adminapp/revenue.html')
 
+@never_cache
 @login_required(login_url='/accounts/login')
 def editCuisine(request,cuisine_id):
     if request.method == 'GET':

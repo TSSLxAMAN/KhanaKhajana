@@ -45,12 +45,13 @@ def dashboard(request):
 @never_cache
 @login_required(login_url='/accounts/login')
 def mycart(request):
-    user_id = request.user
-    user_cart = UserCart.objects.get(user=request.user, is_ordered= False)
-    cart_items = user_cart.items.all()
-    items_count = cart_items.count()
-    is_empty = True
-    if items_count > 0:
-        is_empty = False
-    return render(request, 'home/mycart.html',{'is_empty': is_empty})
+    cart_items = None
+    try:
+        user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+        cart_items = user_cart.items.all()
+        print(cart_items)
+        is_empty = not user_cart.items.exists()
+    except UserCart.DoesNotExist:
+        is_empty = True
+    return render(request, 'home/mycart.html',{'is_empty': is_empty, 'cart_items': cart_items})
 

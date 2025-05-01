@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% block maincontent %} {% load static %}
+{% extends "base.html" %}
+{% block maincontent %}
+{% load static %}
 
 <!-- Cart Header -->
 <div class="bg-gradient-to-r from-orange-600 to-orange-400 py-12">
@@ -13,7 +15,6 @@
 </div>
 <div class="bg-gray-50 min-h-screen">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-
     {% if is_empty %}
     <!-- Empty Cart State -->
     <div class="bg-white rounded-lg shadow-md p-8 text-center">
@@ -66,9 +67,144 @@
         </a>
       </div>
     </div>
-    {% endif %}
+    {% else %}
+    <!-- Cart Items Section -->
+    <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+      {% if cart_items %}
+      <!-- Cart Headers -->
+      <div
+        class="hidden md:flex bg-orange-100 text-orange-800 font-semibold px-6 py-4"
+      >
+        <p>Item in your cart</p>
+      </div>
 
+      <!-- Cart Items -->
+      <div class="divide-y divide-gray-200">
+        {% for item in cart_items %}
+        <div
+          class="flex flex-col md:flex-row items-center px-6 py-5 hover:bg-orange-50 transition duration-150"
+        >
+          <!-- Item Info -->
+          <div
+            class="w-full md:w-2/5 flex items-center space-x-4 mt-4 mb-4 md:mb-0"
+          >
+            <div class="w-16 h-16 flex-shrink-0">
+              <img
+                src="{{ item.cuisine.cusine_image.url }}"
+                alt="{{ item.cuisine.cusine_name }}"
+                class="w-full h-full object-cover rounded-md"
+              />
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">
+                {{ item.cuisine.cusine_name }}
+              </h3>
+              <p class="text-sm text-gray-500">
+                {{ item.cuisine.type }} | {{ item.cuisine.region }}
+              </p>
+              <p class="text-xs text-gray-400">
+                Approx. {{ item.cuisine.time }} min
+              </p>
+            </div>
+          </div>
+
+          <!-- Price -->
+          <div class="w-full md:w-1/5 text-center mb-2 md:mb-0">
+            <span class="md:hidden font-medium text-gray-500">Price:</span>
+            <span class="font-medium text-orange-600">₹{{ item.cuisine.price }}</span>
+          </div>
+
+          <!-- Quantity -->
+          <div class="w-full md:w-1/5 flex justify-center mb-2 md:mb-0">
+            <div
+              class="flex items-center border border-gray-300 rounded-md"
+            >
+              <form
+                method="POST"
+                action=""
+                class="inline"
+              >
+                {% csrf_token %}
+                <input type="hidden" name="action" value="decrease" />
+                <button
+                  type="submit"
+                  class="px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-l-md transition"
+                >
+                  &minus;
+                </button>
+              </form>
+              <input
+                type="number"
+                value="{{ item.quantity }}"
+                min="1"
+                class="outline-none text-center border-none focus:ring-0 focus:border-none focus:outline-none w-12"
+                readonly
+              />
+              <form
+                method="POST"
+                action=""
+                class="inline"
+              >
+                {% csrf_token %}
+                <input type="hidden" name="action" value="increase" />
+                <button
+                  type="submit"
+                  class="px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-r-md transition"
+                >
+                  &plus;
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Total -->
+          <div class="w-full md:w-1/5 text-center mb-2 md:mb-0">
+            <span class="md:hidden font-medium text-gray-500">Total:</span>
+            <span class="font-semibold text-orange-600">₹150</span>
+          </div>
+
+          <!-- Remove Button -->
+          <div class="w-full flex justify-center md:hidden mt-2 cursor-pointer">
+            <form method="POST" action="">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="text-sm text-red-600 hover:text-red-800 transition cursor-pointer"
+              >
+                Remove
+              </button>
+            </form>
+          </div>
+          <div class="hidden md:flex items-center justify-end">
+            <form method="POST" action="">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="text-sm text-red-600 hover:text-red-800 transition cursor-pointer"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </button>
+            </form>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endif %}
   </div>
 </div>
-
-{% endblock maincontent %}
+{% endblock %}

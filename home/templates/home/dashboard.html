@@ -1,3 +1,196 @@
-{% extends "base.html" %} {% block maincontent %}
+{% extends "base.html" %} {% block maincontent %} {% load static %}
+<div class="bg-gradient-to-r from-orange-600 to-orange-400 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl font-bold text-white mb-4">
+      WELCOME {{ user.username | upper }}
+    </h1>
+    <p class="text-orange-100 text-lg max-w-2xl mx-auto">Good to see you!!</p>
+  </div>
+</div>
 
+<div class="bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    {% if messages %}
+    <div class="mb-6">
+      {% for message in messages %} {% if 'cuisine' in message.tags %}
+      <div
+        class="{% if message.tags == 'password' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %} px-4 py-3 rounded-lg mb-2"
+      >
+        {{ message }}
+      </div>
+      {% endif %} {% endfor %}
+    </div>
+    {% endif %}
+    
+    {% if not user.has_usable_password %}
+    <div
+      class="bg-orange-50 border-l-4 border-orange-500 rounded-md shadow-sm p-4 my-4 max-w-lg"
+    >
+      <div class="flex items-center mb-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-orange-500 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <h3 class="font-semibold text-orange-800">Password Not Set</h3>
+      </div>
+      <p class="text-sm text-orange-700 mb-4">
+        Please set a password for your account to ensure security.
+      </p>
+
+      <form id="quick-password-form" class="space-y-3" method="POST">
+        {% csrf_token %}
+
+        <!-- Password input -->
+        <div class="grid grid-cols-4 gap-2">
+          <div class="">
+            <input
+              type="password"
+              id="password"
+              name="{{ form.new_password1.html_name }}"
+              class="px-3 py-2 border border-orange-200 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              placeholder="New password"
+              required
+            />
+            <button
+              type="button"
+              class="text-orange-400 hover:text-orange-600"
+              onclick="togglePasswordVisibility('password')"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Confirm Password input -->
+          <div class="">
+            <input
+              type="password"
+              id="confirm_password"
+              name="{{ form.new_password2.html_name }}"
+              class="px-3 py-2 border border-orange-200 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              placeholder="Confirm password"
+              required
+            />
+            <button
+              type="button"
+              class="text-orange-400 hover:text-orange-600"
+              onclick="togglePasswordVisibility('confirm_password')"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- Error message -->
+          <div id="password-error" class="text-red-500 text-xs hidden">
+            Passwords do not match
+          </div>
+
+          <!-- Submit button -->
+          <div class="flex justify-end">
+            <button
+              type="submit"
+              class="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded text-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+              id="set-password-btn"
+            >
+              Set Password
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+  // Toggle password visibility
+  function togglePasswordVisibility(fieldId) {
+    const field = document.getElementById(fieldId);
+    field.type = field.type === "password" ? "text" : "password";
+  }
+
+  // Check if passwords match
+  document
+    .getElementById("password")
+    .addEventListener("input", checkPasswordsMatch);
+  document
+    .getElementById("confirm_password")
+    .addEventListener("input", checkPasswordsMatch);
+
+  function checkPasswordsMatch() {
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirm_password").value;
+    const errorDiv = document.getElementById("password-error");
+
+    if (confirmPassword && password !== confirmPassword) {
+      errorDiv.classList.remove("hidden");
+    } else {
+      errorDiv.classList.add("hidden");
+    }
+  }
+
+  // Form submission
+  document
+    .getElementById("quick-password-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const password = document.getElementById("password").value;
+      const confirmPassword = document.getElementById("confirm_password").value;
+      const errorDiv = document.getElementById("password-error");
+
+      if (password !== confirmPassword) {
+        errorDiv.classList.remove("hidden");
+        return;
+      }
+
+      // Submit the form if passwords match
+      this.submit();
+    });
+</script>
 {% endblock maincontent %}

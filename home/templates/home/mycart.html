@@ -1,3 +1,74 @@
-{% extends "base.html" %} {% block maincontent %}
+{% extends "base.html" %} {% block maincontent %} {% load static %}
+
+<!-- Cart Header -->
+<div class="bg-gradient-to-r from-orange-600 to-orange-400 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl font-bold text-white mb-4">My Cart</h1>
+    <p class="text-orange-100 text-lg max-w-2xl mx-auto">
+      Here is your cart for your hungry stomach!!
+      <br />
+      ORDER NOW!!
+    </p>
+  </div>
+</div>
+<div class="bg-gray-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+    {% if is_empty %}
+    <!-- Empty Cart State -->
+    <div class="bg-white rounded-lg shadow-md p-8 text-center">
+      <div class="flex flex-col items-center justify-center py-12">
+        <!-- Cart Icon -->
+        <div
+          class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-12 w-12 text-orange-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+        </div>
+
+        <h2 class="text-2xl font-bold text-gray-700 mb-2">
+          Your cart is empty
+        </h2>
+        <p class="text-gray-500 mb-8">No orders are available right now.</p>
+
+        <!-- Browse Cuisine Button -->
+        <a
+          href="{% url 'cuisine' %}"
+          class="bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center space-x-2 mt-3"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            />
+          </svg>
+          <span>Browse Cuisine</span>
+        </a>
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+</div>
 
 {% endblock maincontent %}

@@ -19,7 +19,7 @@
           id="search"
           placeholder="Search cuisines..."
           autocomplete="off"
-          class="w-full pl-10 pr-4 py-2 rounded-lg border border-orange-500 focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+          class="w-full pl-10 pr-4 py-2 rounded-lg border border-orange-500 focus:ring-1 focus:ring-orange-500 focus:border-orange-500 focus:outline-none"
         />
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -35,12 +35,12 @@
         </svg>
       </div>
 
+      <!-- Custom Toggle Switch for VEG/ALL/NON VEG -->
       <div class="bg-orange-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div
             class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0"
           >
-            <!-- Custom Toggle Switch for VEG/ALL/NON VEG -->
             <div class="relative flex items-center">
               <div
                 class="flex items-center bg-gray-200 rounded-full p-2 h-10 shadow-inner"
@@ -164,13 +164,14 @@
           </div>
 
           <!-- Add to Cart Button -->
+          {% if user.is_authenticated %}
           <button
+            class="addToCartBtn w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200 font-semibold cursor-pointer"
             data-id="{{ cuisine.id }}"
-            class="add-to-cart-btn w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200 font-semibold cursor-pointer"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 mr-2"
+              class="h-5 w-5 mr-2 cartLogo"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -182,8 +183,53 @@
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
               />
             </svg>
-            Add to Cart
+
+            <!-- Normal Text -->
+            <span class="btn-text">Add to Cart</span>
+
+            <!-- Loader Spinner (Initially hidden) -->
+            <svg
+              aria-hidden="true"
+              class="spinner hidden w-5 h-5 text-white animate-spin dark:text-orange-950 fill-blue-600"
+              viewBox="0 0 100 101"
+              fill="fill-blue-600"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                fill="currentColor"
+              />
+              <path
+                d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                fill="currentFill"
+              />
+            </svg>
+            <span class="sr-only">Loading...</span>
           </button>
+
+          {% else %}
+          <a href="{% url 'account_login' %}">
+            <button
+              class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200 font-semibold cursor-pointer"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 mr-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                />
+              </svg>
+              Add to Cart
+            </button>
+          </a>
+          {% endif %}
         </div>
       </div>
       {% empty %}
@@ -246,7 +292,7 @@
 <!-- Cart Toast Notification -->
 <div
   id="cart-toast"
-  class="hidden fixed bottom-5 right-5 bg-orange-500 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
+  class="hidden fixed bottom-5 right-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
 >
   <div class="flex justify-between items-center">
     <svg
@@ -265,9 +311,48 @@
   </div>
   <hr class="mt-2" />
   <div class="flex justify-center items-center w-full">
-    <a class="flex justify-between items-center" href="{% url "mycart" %}">
+    <a class="flex justify-between items-center" href="{% url 'mycart' %}">
       <p class="font-semibold text-center mt-2 mx-2">View Cart</p>
-      <img src="{% static '/images/right arrow.png' %}" height="16" width="24" class="mt-2"/>
+      <img
+        src="{% static '/images/right arrow.png' %}"
+        height="16"
+        width="24"
+        class="mt-2"
+      />
+    </a>
+  </div>
+</div>
+
+{% comment %} Already existing cart Toast Notification {% endcomment %}
+<div
+  id="exist-cart-toast"
+  class="hidden fixed bottom-5 right-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
+>
+  <div class="flex justify-between items-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5 mr-2"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <span>Item already in cart</span>
+  </div>
+  <hr class="mt-2" />
+  <div class="flex justify-center items-center w-full">
+    <a class="flex justify-between items-center" href="{% url 'mycart' %}">
+      <p class="font-semibold text-center mt-2 mx-2">View Cart</p>
+      <img
+        src="{% static '/images/right arrow.png' %}"
+        height="16"
+        width="24"
+        class="mt-2"
+      />
     </a>
   </div>
 </div>
@@ -307,6 +392,63 @@
       nonvegBtn.classList.add("text-red-600", "font-semibold");
 
       filterByType("NON VEG");
+    });
+  });
+</script>
+
+<script>
+  document.querySelectorAll(".addToCartBtn").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const textSpan = this.querySelector(".btn-text");
+      const spinner = this.querySelector(".spinner");
+      const cartLogo = this.querySelector(".cartLogo");
+      const cartToast = document.getElementById("cart-toast");
+      const alreadyCartToast = document.getElementById("exist-cart-toast");
+      console.log(cartToast);
+      console.log(alreadyCartToast);
+      textSpan.classList.add("hidden");
+      cartLogo.classList.add("hidden");
+      spinner.classList.remove("hidden");
+
+      const cuisine_id = this.dataset.id;
+      fetch(`/addToCart/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+          query: cuisine_id,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          if (response.exist == true) {
+            alreadyCartToast.classList.remove("hidden");
+            spinner.classList.add("hidden");
+            cartLogo.classList.remove("hidden");
+            textSpan.classList.remove("hidden");
+            textSpan.innerHTML = "Already in the cart";
+            setTimeout(() => {
+              alreadyCartToast.classList.add("hidden");
+            }, 5000);
+          }
+          if (response.success == true) {
+            cartToast.classList.remove("hidden");
+            spinner.classList.add("hidden");
+            this.classList.remove("bg-orange-600");
+            this.classList.remove("hover:bg-orange-700");
+            this.classList.remove("cursor-pointer");
+            this.classList.add("bg-green-600");
+            textSpan.classList.remove("hidden");
+            textSpan.innerHTML = "Added to cart";
+            setTimeout(() => {
+              cartToast.classList.add("hidden");
+            }, 5000);          }
+        });
     });
   });
 </script>

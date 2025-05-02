@@ -7,7 +7,6 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.shortcuts import get_object_or_404
 
-
 # Create your views here.
 @never_cache
 @login_required(login_url='/accounts/login')

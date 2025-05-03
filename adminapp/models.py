@@ -1,6 +1,6 @@
 from django.db import models
 import uuid 
-
+from django.contrib.auth.models import User
 # Create your models here.
 class Cuisine(models.Model):
 
@@ -31,3 +31,10 @@ class Cuisine(models.Model):
     def __str__(self):
         return self.cusine_name
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    address = models.TextField(blank=True, null=True)
+    mobile_number = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return self.user.username

@@ -20,11 +20,9 @@
       </div>
       {% endif %} {% endfor %}
     </div>
-    {% endif %}
-    
-    {% if not user.has_usable_password %}
+    {% endif %} {% if not user.has_usable_password %}
     <div
-      class="bg-orange-50 border-l-4 border-orange-500 rounded-md shadow-sm p-4 my-4 max-w-lg"
+      class="bg-orange-50 border-l-4 border-orange-500 rounded-md shadow-sm p-4 my-4 w-full"
     >
       <div class="flex items-center mb-2">
         <svg
@@ -55,7 +53,7 @@
               type="password"
               id="password"
               name="{{ form.new_password1.html_name }}"
-              class="px-3 py-2 border border-orange-200 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              class="px-3 py-2 border border-orange-200 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm focus:outline-none"
               placeholder="New password"
               required
             />
@@ -93,7 +91,7 @@
               type="password"
               id="confirm_password"
               name="{{ form.new_password2.html_name }}"
-              class="px-3 py-2 border border-orange-200 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+              class="px-3 py-2 border border-orange-200 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm focus:outline-none"
               placeholder="Confirm password"
               required
             />
@@ -126,9 +124,7 @@
           </div>
 
           <!-- Error message -->
-          <div id="password-error" class="text-red-500 text-xs hidden">
-            Passwords do not match
-          </div>
+          <div id="password-error" class="text-xs"></div>
 
           <!-- Submit button -->
           <div class="flex justify-end">
@@ -138,6 +134,116 @@
               id="set-password-btn"
             >
               Set Password
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    {% endif %} 
+    {% comment %} Address From {% endcomment %} 
+    {% if not user_profile.address %}
+    <div
+      class="bg-orange-50 border-l-4 border-orange-500 rounded-md shadow-sm p-4 my-4 w-full"
+    >
+      <div class="flex items-center mb-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-orange-500 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <h3 class="font-semibold text-orange-800">Address Not Set</h3>
+      </div>
+      <p class="text-sm text-orange-700 mb-4">
+        Please set a address for your account to deliver your orders.
+      </p>
+
+      <form id="quick-address-form" class="space-y-3" method="POST">
+        {% csrf_token %}
+        <!-- Address input -->
+        <div class="w-full">
+          <div class="w-full">
+            <textarea
+              name="address"
+              cols="40"
+              rows="3"
+              required
+              id="id_address"
+              class="px-3 py-2 border border-orange-200 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm focus:outline-none"
+            ></textarea>
+          </div>
+          <!-- Submit button -->
+          <div class="flex justify-end w-full">
+            <button
+              type="submit"
+              class="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded text-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+              id="set-address-btn"
+            >
+              Set Address
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+    {% endif %} 
+    {% comment %} Mobile number form {% endcomment %}
+    {% if not user_profile.mobile_number %}
+    <div
+      class="bg-orange-50 border-l-4 border-orange-500 rounded-md shadow-sm p-4 my-4 w-full"
+    >
+      <div class="flex items-center mb-2">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-5 w-5 text-orange-500 mr-2"
+          viewBox="0 0 20 20"
+          fill="currentColor"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <h3 class="font-semibold text-orange-800">Mobile number Not Set</h3>
+      </div>
+      <p class="text-sm text-orange-700 mb-4">
+        Please set a Mobile number for your account to deliver your orders.
+      </p>
+
+      <form id="quick-address-form" class="space-y-3" method="POST">
+        {% csrf_token %}
+
+        <!-- Address input -->
+        <div class="w-full">
+          {% comment %} Address Input {% endcomment %}
+          <div class="w-full">
+            <input
+              class="px-3 py-2 border border-orange-200 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm focus:outline-none w-50"
+              required
+              name="mobile_number"
+              id="mobile_number"
+              pattern="[0-9]{10}"
+              type="tel"
+            />
+
+            <!-- Error message -->
+            <span id="mobile-number-error" class="text-xs text-red-500"> </span>
+          </div>
+
+          <!-- Submit button -->
+          <div class="flex justify-end w-full">
+            <button
+              type="submit"
+              class="bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded text-sm transition duration-300 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-opacity-50"
+              id="set-mobile-number-btn"
+            >
+              Set Mobile Number
             </button>
           </div>
         </div>
@@ -162,15 +268,38 @@
     .getElementById("confirm_password")
     .addEventListener("input", checkPasswordsMatch);
 
+  document
+    .getElementById("mobile_number")
+    .addEventListener("input", checkMobileNumber);
+
   function checkPasswordsMatch() {
     const password = document.getElementById("password").value;
     const confirmPassword = document.getElementById("confirm_password").value;
     const errorDiv = document.getElementById("password-error");
 
-    if (confirmPassword && password !== confirmPassword) {
-      errorDiv.classList.remove("hidden");
+    if (!confirmPassword) {
+      errorDiv.innerText = "";
+      errorDiv.classList.remove("text-red-500", "text-green-500");
+    } else if (password !== confirmPassword) {
+      errorDiv.innerText = "Passwords do not match";
+      errorDiv.classList.add("text-red-500");
+      errorDiv.classList.remove("text-green-500");
     } else {
-      errorDiv.classList.add("hidden");
+      errorDiv.innerText = "Passwords match";
+      errorDiv.classList.add("text-green-500");
+      errorDiv.classList.remove("text-red-500");
+    }
+  }
+
+  function checkMobileNumber() {
+    const mobile_number = document.getElementById("mobile_number").value;
+    const errorDiv = document.getElementById("mobile-number-error");
+
+    if (mobile_number.length != 10) {
+      errorDiv.innerText = "Mobile number length should be of 10 digit";
+      return;
+    } else {
+      errorDiv.innerText = "";
     }
   }
 
@@ -190,6 +319,17 @@
       }
 
       // Submit the form if passwords match
+      this.submit();
+    });
+
+  document
+    .getElementById("quick-address-form")
+    .addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      const mobile_number = document.getElementById("mobile_number").value;
+      const errorDiv = document.getElementById("address-error");
+
       this.submit();
     });
 </script>

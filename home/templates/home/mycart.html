@@ -25,7 +25,181 @@
         <!-- Cart Items -->
         <div id="items_cart" class="divide-y divide-gray-200"></div>
       </div>
+
+      {% comment %} Suggestion {% endcomment %}
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden mt-6 hidden" id="suggestionDiv" >
+        <!-- Cart Headers -->
+        <div
+          class="hidden md:flex bg-orange-100 text-orange-800 font-semibold px-6 py-4"
+        >
+          <p>Suggested Items for you!!</p>
+        </div>
+        <!-- Cart Items -->
+        <div id="items_cart" class="">
+          {% if not is_empty %}
+          <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-6 py-6 px-2"
+          >
+            {% for cuisine in cuisines %}
+            <div
+              class="cuisine-card bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300"
+            >
+              <!-- Cuisine Image -->
+              <div class="h-48 overflow-hidden relative">
+                <img
+                  src="{{ cuisine.cusine_image.url }}"
+                  alt="{{ cuisine.cusine_name }}"
+                  class="w-full h-full object-cover"
+                />
+                <!-- Badge for Type -->
+                <span
+                  class="absolute top-4 right-4 {% if cuisine.type == 'VEG' %}bg-green-500{% else %}bg-red-500{% endif %} text-white text-xs font-bold px-3 py-1 rounded-full"
+                >
+                  {{ cuisine.type }}
+                </span>
+              </div>
+
+              <!-- Cuisine Info -->
+              <div class="p-5">
+                <div class="flex justify-between items-start mb-2">
+                  <h3 class="text-lg font-bold text-gray-900">
+                    {{ cuisine.cusine_name }}
+                  </h3>
+                  <span
+                    class="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded"
+                    >{{ cuisine.region }}</span
+                  >
+                </div>
+
+                <p class="text-gray-600 text-sm mb-4 line-clamp-2">
+                  {{ cuisine.cusine_description }}
+                </p>
+
+                <div class="flex justify-between items-center mb-4">
+                  <div class="flex items-center">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 text-gray-500 mr-1"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span class="text-sm text-gray-600"
+                      >{{ cuisine.time }} mins</span
+                    >
+                  </div>
+                  <div class="text-lg font-bold text-orange-600">
+                    ₹{{ cuisine.price }}
+                  </div>
+                </div>
+
+                <!-- Add to Cart Button -->
+                {% if user.is_authenticated %}
+                <button
+                  class="addToCartBtn w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200 font-semibold cursor-pointer"
+                  data-id="{{ cuisine.id }}"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5 mr-2 cartLogo"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+
+                  <!-- Normal Text -->
+                  <span class="btn-text">Add to Cart</span>
+
+                  <!-- Loader Spinner (Initially hidden) -->
+                  <svg
+                    aria-hidden="true"
+                    class="spinner hidden w-5 h-5 text-white animate-spin dark:text-orange-950 fill-blue-600"
+                    viewBox="0 0 100 101"
+                    fill="fill-blue-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      fill="currentColor"
+                    />
+                    <path
+                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                      fill="currentFill"
+                    />
+                  </svg>
+                  <span class="sr-only">Loading...</span>
+                </button>
+
+                {% else %}
+                <a href="{% url 'account_login' %}">
+                  <button
+                    class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg flex items-center justify-center transition duration-200 font-semibold cursor-pointer"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5 mr-2"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    Add to Cart
+                  </button>
+                </a>
+                {% endif %}
+              </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full py-20 text-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-16 w-16 text-gray-300 mx-auto mb-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                />
+              </svg>
+              <h3 class="text-xl font-medium text-gray-900">
+                No cuisines available
+              </h3>
+              <p class="text-gray-500 mt-2">
+                Please check back later for new dishes.
+              </p>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
     </div>
+
+    <!-- Order Summary -->
     <div class="col-span-3 w-full px-3 py-12">
       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <div
@@ -34,14 +208,14 @@
           <p>Final Order</p>
         </div>
 
-        <!-- Order Summary -->
         <div class="px-6 py-4">
           <h3 class="font-medium text-gray-700 mb-4">Order Summary</h3>
 
-          <div class="space-y-3 mb-6">
+          <div class="space-y-3 mb-6" id="order-summary">
             {% if cart_items %} {% for item in cart_items %}
             <div
               class="flex justify-between items-center text-sm text-gray-600"
+              id="order-cart-item-{{ item.cuisine.id }}"
             >
               <div class="flex items-center">
                 <span
@@ -56,9 +230,6 @@
                   >{{ item.cuisine.price }}</span
                 ></span
               >
-            </div>
-            <div class="hidden text-gray-500 text-sm italic" id="noSubtotalDiv">
-              No items in cart
             </div>
             {% endfor %} {% else %}
             <div class="text-gray-500 text-sm italic">No items in cart</div>
@@ -259,6 +430,50 @@
 
 <!-- Cart Toast Notification -->
 <div
+  id="cart-toast"
+  class="hidden fixed bottom-5 right-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
+>
+  <div class="flex justify-between items-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5 mr-2"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <span>Added to cart!</span>
+  </div>
+</div>
+
+{% comment %} Already existing cart Toast Notification {% endcomment %}
+<div
+  id="exist-cart-toast"
+  class="hidden fixed bottom-5 right-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
+>
+  <div class="flex justify-between items-center">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-5 w-5 mr-2"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    <span>Item already in cart</span>
+  </div>
+</div>
+
+<!-- Cart Remove Toast Notification -->
+<div
   id="remove-cart-toast"
   class="hidden fixed bottom-5 right-5 bg-gradient-to-r from-orange-600 to-orange-400 text-white font-semibold px-4 py-3 rounded-lg shadow-lg items-center z-50"
 >
@@ -277,7 +492,6 @@
     </svg>
     <span>Item Removed from cart!</span>
   </div>
-  
 </div>
 
 {% comment %} fetch cart {% endcomment %}
@@ -428,7 +642,7 @@
         new_subtotal += parseInt(element.textContent);
       }
     });
-
+    console.log(new_subtotal);
     document.getElementById("subtotal").innerText = new_subtotal;
 
     let tax = parseInt(document.getElementById("tax").textContent);
@@ -436,9 +650,9 @@
       parseInt(document.getElementById("delivery").textContent) || 0;
 
     if (new_subtotal === 0) {
-      document.getElementById("noSubtotalDiv").classList.remove("hidden");
       document.getElementById("subtotalDiv").classList.add("hidden");
       document.getElementById("CheckoutBtn").classList.add("hidden");
+      document.getElementById("suggestionDiv").classList.add("hidden");
       items_cart.innerHTML = `
         <div class="bg-white rounded-lg shadow-md p-8 text-center">
             <div class="flex flex-col items-center justify-center py-12">
@@ -489,6 +703,9 @@
             </div>
           </div>
         `;
+    }
+    else{
+      document.getElementById("suggestionDiv").classList.remove("hidden");
     }
 
     if (new_subtotal > 500) {
@@ -599,9 +816,11 @@
         if (summaryRow) summaryRow.remove();
         removeCartToast.classList.remove("hidden");
         setTimeout(() => {
-              removeCartToast.classList.add("hidden");
-            }, 5000);
-        // Update totals
+          removeCartToast.classList.add("hidden");
+        }, 5000);
+
+        const container = document.getElementById(`order-cart-item-${cuisine_id}`);
+        
         updateTotals();
       })
       .catch((error) => {
@@ -610,4 +829,149 @@
   });
 </script>
 
+{% comment %} Add to cart {% endcomment %}
+<script>
+  document.querySelectorAll(".addToCartBtn").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      e.preventDefault();
+
+      const textSpan = this.querySelector(".btn-text");
+      const spinner = this.querySelector(".spinner");
+      const cartLogo = this.querySelector(".cartLogo");
+      const cartToast = document.getElementById("cart-toast");
+      const alreadyCartToast = document.getElementById("exist-cart-toast");
+      textSpan.classList.add("hidden");
+      cartLogo.classList.add("hidden");
+      spinner.classList.remove("hidden");
+
+      const cuisine_id = this.dataset.id;
+      fetch(`/addToCart/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+          query: cuisine_id,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response);
+          if (response.exist == true) {
+            alreadyCartToast.classList.remove("hidden");
+            spinner.classList.add("hidden");
+            cartLogo.classList.remove("hidden");
+            textSpan.classList.remove("hidden");
+            textSpan.innerHTML = "Already in the cart";
+            setTimeout(() => {
+              alreadyCartToast.classList.add("hidden");
+            }, 5000);
+          }
+          if (response.success == true) {
+            cartToast.classList.remove("hidden");
+            spinner.classList.add("hidden");
+            this.classList.remove("bg-orange-600");
+            this.classList.remove("hover:bg-orange-700");
+            this.classList.remove("cursor-pointer");
+            this.classList.add("bg-green-600");
+            textSpan.classList.remove("hidden");
+            textSpan.innerHTML = "Added to cart";
+            setTimeout(() => {
+              cartToast.classList.add("hidden");
+            }, 5000);
+
+            const item = response.cart_item;
+
+            const html = `
+              <div class="flex flex-col md:flex-row items-center px-6 py-5 hover:bg-orange-50 transition duration-150 divide-gray-200" id="cart-item-${
+                item.cuisine.id
+              }">
+                <div class="w-full md:w-2/5 flex items-center space-x-4 mt-4 mb-4 md:mb-0">
+                  <div class="w-16 h-16 flex-shrink-0">
+                    <img src="${item.cuisine.cusine_image_url}" alt="${
+              item.cuisine.cusine_name
+            }" class="w-full h-full object-cover rounded-md" />
+                  </div>
+                  <div>
+                    <h3 class="font-semibold text-gray-900">${
+                      item.cuisine.cusine_name
+                    }</h3>
+                    <p class="text-sm text-gray-500">${item.cuisine.type} | ${
+              item.cuisine.region
+            }</p>
+                    <p class="text-xs text-gray-400">Approx. ${
+                      item.cuisine.time
+                    } min</p>
+                  </div>
+                </div>
+                <div class="w-full md:w-1/5 text-center mb-2 md:mb-0">
+                  <span class="md:hidden font-medium text-gray-500">Price:</span>
+                  <span class="text-orange-600">₹<span id="item_price_${
+                    item.cuisine.id
+                  }" class="font-medium">${
+              item.cuisine.price
+            }<span class="text-gray-400 text-sm font-mono italic">/qty</span></span></span>
+                </div>
+                <div class="w-full md:w-1/5 flex justify-center mb-2 md:mb-0">
+                  <div class="flex items-center border border-gray-300 rounded-md">
+                    <button data-id="${
+                      item.cuisine.id
+                    }" type="button" class="decrease px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-l-md transition cursor-pointer">&minus;</button>
+                    <input type="number" id="item-quantity-${
+                      item.cuisine.id
+                    }" value="${item.quantity}" min="1" class="item-quantity-${
+              item.cuisine.id
+            } outline-none text-center border-none focus:ring-0 focus:border-none w-12" readonly />
+                    <button data-id="${
+                      item.cuisine.id
+                    }" type="button" class="increase px-3 py-1 bg-orange-100 hover:bg-orange-200 text-orange-600 rounded-r-md transition cursor-pointer">&plus;</button>
+                  </div>
+                </div>
+                <div class="w-full md:w-1/5 text-center mb-2 md:mb-0">
+                  <span class="md:hidden font-medium text-gray-500">Total:</span>
+                  <span class="font-semibold text-orange-600">₹<span class="item-total-${
+                    item.cuisine.id
+                  }">${item.cuisine.price * item.quantity}</span></span>
+                </div>
+                <div class="hidden md:flex items-center justify-end">
+                  <button type="button" class="removeBtn text-sm text-red-600 hover:text-red-800 transition cursor-pointer" data-id="${
+                    item.cuisine.id
+                  }">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+              `;
+
+            document
+              .getElementById("items_cart")
+              .insertAdjacentHTML("beforeend", html);
+
+            const summaryDiv = document.getElementById("order-summary");
+            const itemHTML = `
+              <div class="flex justify-between items-center text-sm text-gray-600" id="order-cart-item-${item.cuisine.id}">
+                <div class="flex items-center">
+                  <span>
+                    <span class="item-quantity-${item.cuisine.id}">1</span>
+                    × ${item.cuisine.cusine_name}
+                  </span>
+                </div>
+                <span class="font-medium">
+                  ₹<span class="item-subtotal item-total-${item.cuisine.id}">${item.cuisine.price}</span>
+                </span>
+              </div>
+            `;
+            summaryDiv.insertAdjacentHTML("beforeend", itemHTML);
+            updateTotals()
+          }
+        });
+    });
+  });
+</script>
+<script>
+  updateTotals();
+</script>
 {% endblock %}

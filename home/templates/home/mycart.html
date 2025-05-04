@@ -12,7 +12,7 @@
   </div>
 </div>
 
-{% comment %} My cart  {% endcomment %}
+{% comment %} My cart {% endcomment %}
 <div class="bg-gray-50 min-h-screen">
   <div class="grid grid-cols-12">
     <div class="col-span-9 w-full px-3 py-12">
@@ -25,11 +25,44 @@
           <p>Item in your cart</p>
         </div>
         <!-- Cart Items -->
-        <div id="items_cart" class="divide-y divide-gray-200"></div>
+        <div id="items_cart" class="divide-y divide-gray-200">
+          <div
+            id="spinner"
+            class="w-full min-h-[140px] place-items-center overflow-x-scroll rounded-lg p-6 lg:overflow-visible flex justify-center"
+          >
+            <svg
+              class="text-orange-500 animate-spin"
+              viewBox="0 0 64 64"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+            >
+              <path
+                d="M32 3C35.8083 3 39.5794 3.75011 43.0978 5.20749C46.6163 6.66488 49.8132 8.80101 52.5061 11.4939C55.199 14.1868 57.3351 17.3837 58.7925 20.9022C60.2499 24.4206 61 28.1917 61 32C61 35.8083 60.2499 39.5794 58.7925 43.0978C57.3351 46.6163 55.199 49.8132 52.5061 52.5061C49.8132 55.199 46.6163 57.3351 43.0978 58.7925C39.5794 60.2499 35.8083 61 32 61C28.1917 61 24.4206 60.2499 20.9022 58.7925C17.3837 57.3351 14.1868 55.199 11.4939 52.5061C8.801 49.8132 6.66487 46.6163 5.20749 43.0978C3.7501 39.5794 3 35.8083 3 32C3 28.1917 3.75011 24.4206 5.2075 20.9022C6.66489 17.3837 8.80101 14.1868 11.4939 11.4939C14.1868 8.80099 17.3838 6.66487 20.9022 5.20749C24.4206 3.7501 28.1917 3 32 3L32 3Z"
+                stroke="currentColor"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              ></path>
+              <path
+                d="M32 3C36.5778 3 41.0906 4.08374 45.1692 6.16256C49.2477 8.24138 52.7762 11.2562 55.466 14.9605C58.1558 18.6647 59.9304 22.9531 60.6448 27.4748C61.3591 31.9965 60.9928 36.6232 59.5759 40.9762"
+                stroke="currentColor"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="text-gray-900"
+              ></path>
+            </svg>
+          </div>
+        </div>
       </div>
 
       {% comment %} Suggestion {% endcomment %}
-      <div class="bg-white rounded-xl shadow-lg overflow-hidden mt-6 hidden" id="suggestionDiv" >
+      <div
+        class="bg-white rounded-xl shadow-lg overflow-hidden mt-6 hidden"
+        id="suggestionDiv"
+      >
         <!-- Cart Headers -->
         <div
           class="hidden md:flex bg-orange-100 text-orange-800 font-semibold px-6 py-4"
@@ -297,13 +330,12 @@
           {% endif %}
           <!-- Checkout Button -->
           {% if cart_items %}
-          <a
-            href="#"
-            id="CheckoutBtn"
-            class="block w-full bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 text-white font-medium py-3 px-6 rounded-md transition duration-300 text-center"
+          <button
+            id="open-drawer-button"
+            class="block w-full bg-gradient-to-r from-orange-600 to-orange-400 text-white font-medium py-3 px-6 rounded-md transition duration-300 text-center cursor-pointer"
           >
             Proceed to Checkout
-          </a>
+          </button>
 
           {% endif %}
 
@@ -496,6 +528,154 @@
   </div>
 </div>
 
+<!-- Drawer component -->
+<div
+  id="drawer-bottom-example"
+  class="fixed bottom-0 left-0 right-0 z-40 w-full p-4 overflow-y-auto transition-transform duration-300 ease-in-out bg-white shadow-lg border-t-2 border-orange-500 translate-y-full hidden"
+  tabindex="-1"
+  aria-labelledby="drawer-bottom-label"
+>
+  <div class="flex justify-between px-4">
+    <div>
+      <h5
+        id="drawer-bottom-label"
+        class="inline-flex items-center mb-1 text-base font-semibold text-orange-600"
+      >
+        <svg
+          class="w-4 h-4 mr-2"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"
+          /></svg
+        >Place your order
+      </h5>
+      <p class="text-sm mb-4 text-orange-600">
+        We are using your default address and number. Chnage if you want.
+      </p>
+    </div>
+    <div>
+      <button
+        type="button"
+        data-drawer-hide="drawer-bottom-example"
+        aria-controls="drawer-bottom-example"
+        class="p-2 text-orange-500 bg-transparent hover:bg-orange-200 hover:text-orange-700 rounded-lg text-sm w-8 h-8 absolute top-2.5 end-2.5 inline-flex items-center justify-center cursor-pointer"
+        id="close-drawer"
+      >
+        <svg
+          class="w-3 h-3"
+          aria-hidden="true"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 14 14"
+        >
+          <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+          />
+        </svg>
+        <span class="sr-only">Close menu</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Address Field -->
+  <div class="mb-4">
+    <label for="address" class="block mb-2 text-sm font-medium text-gray-900"
+      >Delivery Address</label
+    >
+    <textarea
+      id="address"
+      rows="2"
+      cols="100"
+      class="block p-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-orange-500 focus:border-orange-500 focus:outline-none"
+      placeholder="Enter your full delivery address..."
+    >
+{{ user_address }}</textarea
+    >
+    <p id="address-error" class="mt-1 text-sm text-red-600 hidden">
+      Address is required.
+    </p>
+  </div>
+
+  <!-- Mobile Number Field -->
+  <div class="mb-4">
+    <label for="number" class="block mb-2 text-sm font-medium text-gray-900"
+      >Mobile Number</label
+    >
+    <input
+      id="number"
+      class="block p-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-orange-500 focus:border-orange-500 focus:outline-none"
+      placeholder="Enter your mobile number..."
+      value="{% if user_number %}{{ user_number }}{% endif %}"
+    />
+    <p id="number-error" class="mt-1 text-sm text-red-600 hidden">
+      Mobile number is required.
+    </p>
+  </div>
+
+  <div class="mb-4">
+    <label class="block mb-2 text-sm font-medium text-gray-900"
+      >Payment Method</label
+    >
+    <div class="grid grid-cols-12 gap-3">
+      <div
+        class="flex col-span-2 items-center p-3 rounded-lg cursor-pointer hover:bg-orange-50"
+      >
+        <input
+          id="payment-cod"
+          type="radio"
+          name="payment"
+          style="accent-color: #f97316"
+          value="COD"
+          class="w-4 h-4 text-orange-600 focus:ring-orange-500"
+        />
+        <label
+          for="payment-cod"
+          class="w-full ms-2 text-sm font-medium text-gray-900 cursor-pointer"
+          >Cash on Delivery</label
+        >
+      </div>
+      <div
+        class="flex col-span-2 items-center p-3 rounded-lg cursor-pointer hover:bg-orange-50"
+      >
+        <input
+          id="payment-upi"
+          type="radio"
+          name="payment"
+          style="accent-color: #f97316"
+          value="UPI"
+          class="w-4 h-4 text-orange-600 focus:ring-orange-500"
+        />
+        <label
+          for="payment-upi"
+          class="w-full ms-2 text-sm font-medium text-gray-900 cursor-pointer"
+          >UPI</label
+        >
+      </div>
+    </div>
+    <p id="payment-error" class="mt-1 text-sm text-red-600 hidden">
+      Please select a payment method.
+    </p>
+  </div>
+  <!-- Order Button (Initially Disabled) -->
+  <div class="flex px-4 space-x-3 justify-center items-center">
+    <button
+      id="order_btn"
+      disabled
+      class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 rounded-lg hover:from-orange-700 hover:to-orange-500 focus:ring-4 focus:ring-orange-300 focus:outline-none transition duration-300 shadow-md hover:shadow-lg"
+    >
+      Order now
+    </button>
+  </div>
+</div>
+
 {% comment %} fetch cart {% endcomment %}
 <script>
   fetch(`/get_cart_data_json/`, {
@@ -510,6 +690,7 @@
       console.log(response.cart_items.length);
       const items_cart = document.getElementById("items_cart");
       if (response.cart_items.length === 0) {
+        document.getElementById("spinner").classList.add("hidden");
         items_cart.innerHTML = `
         <div class="bg-white rounded-lg shadow-md p-8 text-center">
             <div class="flex flex-col items-center justify-center py-12">
@@ -539,7 +720,7 @@
 
               <a
                 href="{% url 'cuisine' %}"
-                class="bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center space-x-2 mt-3"
+                class="bg-gradient-to-r from-orange-600 to-orange-400 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center space-x-2 mt-3"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -561,6 +742,8 @@
           </div>
         `;
       } else {
+        document.getElementById("spinner").classList.add("hidden");
+
         response.cart_items.forEach((item) => {
           const html = `
         <div class="flex flex-col md:flex-row items-center px-6 py-5 hover:bg-orange-50 transition duration-150 divide-gray-200"  id="cart-item-${
@@ -684,7 +867,7 @@
 
               <a
                 href="{% url 'cuisine' %}"
-                class="bg-gradient-to-r from-orange-600 to-orange-400 hover:from-orange-700 hover:to-orange-500 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center space-x-2 mt-3"
+                class="bg-gradient-to-r from-orange-600 to-orange-400 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center space-x-2 mt-3"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -705,8 +888,7 @@
             </div>
           </div>
         `;
-    }
-    else{
+    } else {
       document.getElementById("suggestionDiv").classList.remove("hidden");
     }
 
@@ -821,8 +1003,10 @@
           removeCartToast.classList.add("hidden");
         }, 5000);
 
-        const container = document.getElementById(`order-cart-item-${cuisine_id}`);
-        
+        const container = document.getElementById(
+          `order-cart-item-${cuisine_id}`
+        );
+
         updateTotals();
       })
       .catch((error) => {
@@ -967,13 +1151,99 @@
               </div>
             `;
             summaryDiv.insertAdjacentHTML("beforeend", itemHTML);
-            updateTotals()
+            updateTotals();
           }
         });
     });
   });
 </script>
+
+{% comment %} Drawer Logic {% endcomment %}
 <script>
-  updateTotals();
+  const drawer = document.getElementById("drawer-bottom-example");
+  const openBtn = document.getElementById("open-drawer-button");
+  const closeBtn = document.getElementById("close-drawer");
+
+  openBtn.addEventListener("click", () => {
+    drawer.classList.remove("hidden", "translate-y-full");
+    drawer.classList.add("translate-y-0");
+  });
+
+  closeBtn.addEventListener("click", () => {
+    drawer.classList.remove("translate-y-0");
+    drawer.classList.add("translate-y-full");
+    drawer.classList.add("hidden");
+  });
 </script>
+
+{% comment %} Place ORDER {% endcomment %}
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const addressInput = document.getElementById("address");
+    const numberInput = document.getElementById("number");
+    const orderBtn = document.getElementById("order_btn");
+    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+
+    const addressError = document.getElementById("address-error");
+    const numberError = document.getElementById("number-error");
+    const paymentError = document.getElementById("payment-error");
+
+    const validateInputs = () => {
+      const address = addressInput.value.trim();
+      const number = numberInput.value.trim();
+      const orderBtn = document.getElementById("order_btn");
+      const paymentSelected = document.querySelector(
+        'input[name="payment"]:checked'
+      );
+
+      let isValid = true;
+
+      if (!address) {
+        addressError.classList.remove("hidden");
+        isValid = false;
+      } else {
+        addressError.classList.add("hidden");
+      }
+
+      if (!number) {
+        numberError.classList.remove("hidden");
+        isValid = false;
+      } else {
+        numberError.classList.add("hidden");
+      }
+
+      if (!paymentSelected) {
+        paymentError.classList.remove("hidden");
+        isValid = false;
+      } else {
+        paymentError.classList.add("hidden");
+      }
+
+      return isValid;
+    };
+
+    // Attach real-time listeners
+    addressInput.addEventListener("input", validateInputs);
+    numberInput.addEventListener("input", validateInputs);
+    paymentRadios.forEach((radio) => {
+      radio.addEventListener("change", () => {
+        validateInputs();
+      });
+    });
+
+    const is_order = validateInputs();
+    if (!is_order) {
+      orderBtn.disabled = false;
+    }
+
+    // Final validation on click
+
+    orderBtn.addEventListener("click", () => {
+        console.log("yes");
+    })
+    // Run initial validation on page load
+    validateInputs()
+  });
+</script>
+
 {% endblock %}

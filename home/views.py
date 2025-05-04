@@ -26,6 +26,12 @@ def aboutus(request):
 def contact(request):
     return render(request, 'home/contact.html')
 
+def myprofile(request):
+    return render(request, 'home/myprofile.html')
+
+def myorders(request):
+    return render(request, 'home/myorders.html')
+
 
 @never_cache
 @login_required(login_url='/accounts/login')
@@ -34,18 +40,18 @@ def dashboard(request):
         return redirect('adminDashboard')
     
     if not request.user.has_usable_password():
-        if request.method == 'POST' and 'set_password' in request.POST:
+        if request.method == 'POST':
             form = CustomSetPasswordForm(user=request.user, data=request.POST)
             if form.is_valid():
                 form.save()
                 update_session_auth_hash(request, request.user)
-                messages.success(request, "Password set successfully!", extra_tags='password')
+                messages.success(request, "Password set successfully!",extra_tags='password')
                 return redirect('dashboard')
         else:
             form = CustomSetPasswordForm(user=request.user)
     else:
         form = None
-    
+
     user_profile, created = UserProfile.objects.get_or_create(user=request.user)
     
     address_form = SetAddressForm(instance=user_profile)
@@ -77,6 +83,8 @@ def dashboard(request):
 def mycart(request):
     cart_items = None
     cuisines = None
+    user_address = None
+    user_number = None
     try:
         user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
         cart_items = user_cart.items.all()
@@ -84,9 +92,14 @@ def mycart(request):
         data = {}
         is_empty = not user_cart.items.exists()
         cuisines = Cuisine.objects.filter(region="SNACK")
+        user_info = UserProfile.objects.get(user=request.user)
+        user_address = user_info.address
+        user_number = user_info.mobile_number
+        print(user_number)
+        print(user_address)
     except UserCart.DoesNotExist:
         is_empty = True
-    return render(request, 'home/mycart.html',{'is_empty': is_empty, 'cart_items': cart_items, 'cuisines':cuisines})
+    return render(request, 'home/mycart.html',{'is_empty': is_empty, 'cart_items': cart_items, 'cuisines':cuisines, 'user_address':user_address, 'user_number':user_number})
 
 
 @login_required(login_url='/accounts/login')

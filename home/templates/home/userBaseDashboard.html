@@ -1,0 +1,122 @@
+{% extends "base.html" %} {% block maincontent %} {% load static %}
+<div class="bg-gradient-to-r from-orange-600 to-orange-400 py-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-4xl font-bold text-white mb-4">
+      WELCOME {{ user.username | upper }}
+    </h1>
+    <p class="text-orange-100 text-lg max-w-2xl mx-auto">Good to see you!!</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-12 bg-orange-50 max-h-screen">
+  <!-- Sidebar -->
+  <div class="col-span-3 bg-white shadow-md">
+    <div class="flex flex-col justify-between h-full">
+      <div class="flex-grow">
+        <div class="px-4 py-6 border-b border-orange-800">
+          <h1 class="text-xl font-bold leading-none">
+            <span class="text-orange-600">{{ user.username | upper }}</span> Dashboard
+          </h1>
+        </div>
+        <div class="p-4">
+          <ul class="space-y-1">
+            <li>
+              <a
+                href="{% url "dashboard" %}"
+                class="{% if request.path == '/dashboard/' %}flex items-center bg-orange-200 rounded-xl font-bold text-sm text-orange-900 py-3 px-4 {% else %}flex items-center  rounded-xl font-bold text-sm py-3 px-4{% endif %}"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  class="text-lg mr-4"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM16 14V5H0v9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2zm-3.5-7h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5z"
+                  /></svg
+                >Dashboard
+              </a>
+            </li>
+            <li>
+              <a
+                href="{% url "myprofile" %}"
+                class="{% if request.path == '/myprofile/' %}flex items-center bg-orange-200 rounded-xl font-bold text-sm text-orange-900 py-3 px-4 {% else %}flex items-center rounded-xl font-bold text-sm py-3 px-4{% endif %}"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="1em"
+                  height="1em"
+                  fill="currentColor"
+                  class="text-lg mr-4"
+                  viewBox="0 0 16 16"
+                >
+                  <path
+                    d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM5 4h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1zm0 2h3a.5.5 0 0 1 0 1H5a.5.5 0 0 1 0-1z"
+                  /></svg
+                >My Profile
+              </a>
+            </li>
+            <li>
+              <a
+                href="{% url "myorders" %}"
+                class="{% if request.path == '/myorders/' %}flex items-center bg-orange-200 rounded-xl font-bold text-sm text-orange-900 py-3 px-4 {% else %}flex items-center  rounded-xl font-bold text-sm py-3 px-4{% endif %}"
+              >
+                <svg
+                  fill="#000000"
+                  width="1em"
+                  height="1em"
+                  viewBox="0 0 32 32"
+                  id="icon"
+                  class="text-lg mr-4"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <defs>
+                    <style>
+                      .cls-1 {
+                        fill: none;
+                      }
+                    </style>
+                  </defs>
+                  <circle cx="9" cy="16" r="2" />
+                  <circle cx="23" cy="16" r="2" />
+                  <circle cx="16" cy="16" r="2" />
+                  <path
+                    d="M16,30A14,14,0,1,1,30,16,14.0158,14.0158,0,0,1,16,30ZM16,4A12,12,0,1,0,28,16,12.0137,12.0137,0,0,0,16,4Z"
+                    transform="translate(0 0)"
+                  />
+                  <rect
+                    id="_Transparent_Rectangle_"
+                    data-name="&lt;Transparent Rectangle&gt;"
+                    class="cls-1"
+                    width="32"
+                    height="32"
+                  /></svg
+                >My Orders
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="col-span-9 max-h-screen  w-full">
+    {% block userDashboard %} {% endblock userDashboard %}
+  </div>
+</div>
+<script>
+  document
+    .getElementById("mobile-menu-button")
+    .addEventListener("click", function () {
+      const menu = document.getElementById("mobile-menu");
+      if (menu.style.display === "none") {
+        menu.style.display = "block";
+      } else {
+        menu.style.display = "none";
+      }
+    });
+</script>
+{% endblock maincontent %}

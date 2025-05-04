@@ -9,8 +9,13 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
       rel="stylesheet"
     />
-    <link rel="icon" href="{% static 'images/featureImage/Logo.png' %}" type="image/png"/>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link
+      rel="icon"
+      href="{% static 'images/featureImage/Logo.png' %}"
+      type="image/png"
+    />
+    
+
     <title>Khana Khajana</title>
 
     <style>
@@ -56,7 +61,7 @@
 
     <!-- Main Content -->
     <main class="flex-grow">
-      {% block hero %}{% endblock hero %} {% block maincontent %}
+      {% block hero %}{% endblock hero %} {% block maincontent %} 
       {% endblock maincontent %}
     </main>
 

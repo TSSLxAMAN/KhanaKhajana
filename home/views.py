@@ -4,14 +4,20 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import update_session_auth_hash
 from django.http import JsonResponse
 from django.contrib import messages
+from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from .forms import CustomSetPasswordForm
 from .forms import SetAddressForm, SetMobileForm
+
 from .models import *
 
 from adminapp.models import Cuisine, UserProfile
 
 import json
+import razorpay
+client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
 # Create your views here.
 def homepage(request):
     return render(request, 'home/home.html')
@@ -184,3 +190,23 @@ def removeItem(request):
         return JsonResponse({'success': False, 'error': 'Cuisine not found'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+@login_required(login_url='/accounts/login')
+def cart_total_price(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        data_dict = data.get('query')
+        print('data_dict : ',data_dict)
+        total = 0
+        for item in data_dict:
+            cuisine = get_object_or_404(Cuisine, id=item['cuisine_id'])
+            cuisine_price = cuisine.price
+            cuisine_qty = item['quantity']
+            total += cuisine_price * cuisine_qty
+        if total < 500 :
+            total = total + 50 + 18
+        else:
+            total = total + 18  
+        return JsonResponse({"success": True, "total": total})
+    else: 
+        return JsonResponse({"success": False})

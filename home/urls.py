@@ -13,5 +13,5 @@ urlpatterns = [
     path('addToCart/', addToCart, name='addToCart'), 
     path('removeItem/', removeItem, name='removeItem'),
     path('get_cart_data_json/', get_cart_data_json, name='get_cart_data_json'),
- 
+    path('cart_total_price/', cart_total_price, name='cart_total_price'),
 ]

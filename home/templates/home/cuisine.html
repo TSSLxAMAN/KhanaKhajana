@@ -1,4 +1,11 @@
 {% extends "base.html" %} {% block maincontent %} {% load static %}
+<style>
+  .cuisine-card {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+</style>
 <div class="bg-gradient-to-r from-orange-600 to-orange-400 py-12">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
     <h1 class="text-4xl font-bold text-white mb-4">Our Cuisine</h1>
@@ -112,9 +119,12 @@
         <!-- Cuisine Image -->
         <div class="h-48 overflow-hidden relative">
           <img
+            loading="lazy"
             src="{{ cuisine.cusine_image.url }}"
             alt="{{ cuisine.cusine_name }}"
             class="w-full h-full object-cover"
+            width="400"
+            height="192"
           />
           <!-- Badge for Type -->
           <span
@@ -314,6 +324,7 @@
     <a class="flex justify-between items-center" href="{% url 'mycart' %}">
       <p class="font-semibold text-center mt-2 mx-2">View Cart</p>
       <img
+        loading="lazy"
         src="{% static '/images/right arrow.png' %}"
         height="16"
         width="24"
@@ -348,6 +359,7 @@
     <a class="flex justify-between items-center" href="{% url 'mycart' %}">
       <p class="font-semibold text-center mt-2 mx-2">View Cart</p>
       <img
+        loading="lazy"
         src="{% static '/images/right arrow.png' %}"
         height="16"
         width="24"

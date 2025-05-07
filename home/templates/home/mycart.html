@@ -1,5 +1,12 @@
 {% extends "base.html" %} {% block maincontent %} {% load static %}
 
+<style>
+  .cuisine-card {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+  }
+</style>
 <!-- Cart Header -->
 <div class="bg-gradient-to-r from-orange-600 to-orange-400 py-12">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -82,9 +89,12 @@
               <!-- Cuisine Image -->
               <div class="h-48 overflow-hidden relative">
                 <img
+                  loading="lazy"
                   src="{{ cuisine.cusine_image.url }}"
                   alt="{{ cuisine.cusine_name }}"
                   class="w-full h-full object-cover"
+                  width="400"
+                  height="192"
                 />
                 <!-- Badge for Type -->
                 <span
@@ -372,6 +382,7 @@
                 class="col-span-1 p-2 border border-gray-200 rounded flex items-center justify-center"
               >
                 <img
+                  loading="lazy"
                   src="{% static 'images/visa_icon.svg' %}"
                   alt="Visa"
                   class="h-8 w-auto object-contain"
@@ -381,6 +392,7 @@
                 class="p-2 border border-gray-200 rounded flex items-center justify-center col-span-1"
               >
                 <img
+                  loading="lazy"
                   src="{% static 'images/mastercard_icon.svg' %}"
                   alt="Mastercard"
                   class="h-8 w-auto object-contain"
@@ -390,6 +402,7 @@
                 class="p-2 border border-gray-200 rounded flex items-center justify-center col-span-1"
               >
                 <img
+                  loading="lazy"
                   src="{% static 'images/bhim_icon.svg' %}"
                   alt="BHIM UPI"
                   class="h-8 w-auto object-contain"
@@ -399,6 +412,7 @@
                 class="p-2 border border-gray-200 rounded flex items-center justify-center col-span-1"
               >
                 <img
+                  loading="lazy"
                   src="{% static 'images/google_pay.svg' %}"
                   alt="BHIM UPI"
                   class="h-8 w-auto object-contain"
@@ -439,6 +453,7 @@
               class="rounded-full col-span-1 flex justify-center items-center"
             >
               <img
+                loading="lazy"
                 src="{% static 'images/help.svg' %}"
                 alt="BHIM UPI"
                 class="h-8 w-auto object-contain"
@@ -671,7 +686,7 @@
       disabled
       class="flex-1 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-600 to-orange-400 rounded-lg hover:from-orange-700 hover:to-orange-500 focus:ring-4 focus:ring-orange-300 focus:outline-none transition duration-300 shadow-md hover:shadow-lg"
     >
-      Order now
+      Place order
     </button>
   </div>
 </div>
@@ -746,12 +761,13 @@
 
         response.cart_items.forEach((item) => {
           const html = `
-        <div class="flex flex-col md:flex-row items-center px-6 py-5 hover:bg-orange-50 transition duration-150 divide-gray-200"  id="cart-item-${
+        <div class="cart-item flex flex-col md:flex-row items-center px-6 py-5 hover:bg-orange-50 transition duration-150 divide-gray-200"  id="cart-item-${
           item.cuisine.id
-        }">
+        }" data-id="${item.cuisine.id}">
           <div class="w-full md:w-2/5 flex items-center space-x-4 mt-4 mb-4 md:mb-0">
             <div class="w-16 h-16 flex-shrink-0">
-              <img src="${item.cuisine.cusine_image_url}" alt="${
+              <img
+                loading = "lazy" src="${item.cuisine.cusine_image_url}" alt="${
             item.cuisine.cusine_name
           }" class="w-full h-full object-cover rounded-md" />
             </div>
@@ -1043,7 +1059,6 @@
       })
         .then((response) => response.json())
         .then((response) => {
-          console.log(response);
           if (response.exist == true) {
             alreadyCartToast.classList.remove("hidden");
             spinner.classList.add("hidden");
@@ -1075,7 +1090,10 @@
               }">
                 <div class="w-full md:w-2/5 flex items-center space-x-4 mt-4 mb-4 md:mb-0">
                   <div class="w-16 h-16 flex-shrink-0">
-                    <img src="${item.cuisine.cusine_image_url}" alt="${
+                    <img
+                      loading = "lazy" src="${
+                        item.cuisine.cusine_image_url
+                      }" alt="${
               item.cuisine.cusine_name
             }" class="w-full h-full object-cover rounded-md" />
                   </div>
@@ -1167,83 +1185,151 @@
   openBtn.addEventListener("click", () => {
     drawer.classList.remove("hidden", "translate-y-full");
     drawer.classList.add("translate-y-0");
+    validateInputs();
   });
 
   closeBtn.addEventListener("click", () => {
     drawer.classList.remove("translate-y-0");
     drawer.classList.add("translate-y-full");
     drawer.classList.add("hidden");
+
+    const paymet_btn = document.querySelectorAll('input[name="payment"]');
+    paymet_btn.forEach((radio) => {
+      radio.checked = false;
+    });
+
+    const orderBtn = document.getElementById("order_btn");
+    orderBtn.innerText = "Place order";
+    orderBtn.disabled = true;
   });
 </script>
 
 {% comment %} Place ORDER {% endcomment %}
 <script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const addressInput = document.getElementById("address");
-    const numberInput = document.getElementById("number");
+  const addressInput = document.getElementById("address");
+  const numberInput = document.getElementById("number");
+  const orderBtn = document.getElementById("order_btn");
+  const paymentRadios = document.querySelectorAll('input[name="payment"]');
+
+  const addressError = document.getElementById("address-error");
+  const numberError = document.getElementById("number-error");
+  const paymentError = document.getElementById("payment-error");
+
+  const validateInputs = () => {
+    const address = addressInput.value.trim();
+    const number = numberInput.value.trim();
     const orderBtn = document.getElementById("order_btn");
-    const paymentRadios = document.querySelectorAll('input[name="payment"]');
+    const paymentSelected = document.querySelector(
+      'input[name="payment"]:checked'
+    );
 
-    const addressError = document.getElementById("address-error");
-    const numberError = document.getElementById("number-error");
-    const paymentError = document.getElementById("payment-error");
+    let isValid = true;
 
-    const validateInputs = () => {
-      const address = addressInput.value.trim();
-      const number = numberInput.value.trim();
-      const orderBtn = document.getElementById("order_btn");
-      const paymentSelected = document.querySelector(
-        'input[name="payment"]:checked'
-      );
+    if (!address) {
+      addressError.classList.remove("hidden");
+      isValid = false;
+    } else {
+      addressError.classList.add("hidden");
+    }
 
-      let isValid = true;
+    if (!number) {
+      numberError.classList.remove("hidden");
+      isValid = false;
+    } else {
+      numberError.classList.add("hidden");
+    }
 
-      if (!address) {
-        addressError.classList.remove("hidden");
-        isValid = false;
-      } else {
-        addressError.classList.add("hidden");
+    if (!paymentSelected) {
+      paymentError.classList.remove("hidden");
+      isValid = false;
+    } else {
+      paymentError.classList.add("hidden");
+    }
+
+    return isValid;
+  };
+
+  addressInput.addEventListener("input", validateInputs);
+  numberInput.addEventListener("input", validateInputs);
+  paymentRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      validateInputs();
+      let is_order = validateInputs();
+      console.log("is_order", is_order);
+      if (is_order) {
+        const orderBtn = document.getElementById("order_btn");
+        orderBtn.disabled = false;
       }
+    });
+  });
 
-      if (!number) {
-        numberError.classList.remove("hidden");
-        isValid = false;
-      } else {
-        numberError.classList.add("hidden");
-      }
+  orderBtn.addEventListener("click", () => {
+    const paymentSelected = document.querySelector(
+      'input[name="payment"]:checked'
+    );
+    if (paymentSelected && paymentSelected.value === "UPI") {
+      const cartData = getCartData();
+      fetch(`/cart_total_price/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+          query: cartData,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.success === true) {
+            for_COD = response.total
+            console.log(for_COD)
+            const orderBtn = document.getElementById("order_btn");
+            orderBtn.innerText = `Pay Now ₹ ${response.total}`;
+          }
+        });
+    } 
+    
+    if (paymentSelected && paymentSelected.value === "COD") {
+      const cartData = getCartData();
+      fetch(`/cart_total_price/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+          query: cartData,
+        }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.success === true) {
+            for_COD = response.total
+            console.log(for_COD)
+            const orderBtn = document.getElementById("order_btn");
+            orderBtn.innerText = `Pay ₹ ${response.total} to Delivery boy`;
+          }
+        });
+    } 
+  });
 
-      if (!paymentSelected) {
-        paymentError.classList.remove("hidden");
-        isValid = false;
-      } else {
-        paymentError.classList.add("hidden");
-      }
+  function getCartData() {
+    const cartData = [];
 
-      return isValid;
-    };
+    document.querySelectorAll(".cart-item").forEach((item) => {
+      const cuisineId = item.dataset.id;
+      const quantityInput = item.querySelector(`input[id^="item-quantity-"]`);
+      const quantity = parseInt(quantityInput.value);
 
-    // Attach real-time listeners
-    addressInput.addEventListener("input", validateInputs);
-    numberInput.addEventListener("input", validateInputs);
-    paymentRadios.forEach((radio) => {
-      radio.addEventListener("change", () => {
-        validateInputs();
+      cartData.push({
+        cuisine_id: cuisineId,
+        quantity: quantity,
       });
     });
 
-    const is_order = validateInputs();
-    if (!is_order) {
-      orderBtn.disabled = false;
-    }
-
-    // Final validation on click
-
-    orderBtn.addEventListener("click", () => {
-        console.log("yes");
-    })
-    // Run initial validation on page load
-    validateInputs()
-  });
+    return cartData;
+  }
 </script>
 
 {% endblock %}

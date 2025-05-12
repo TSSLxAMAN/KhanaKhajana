@@ -14,4 +14,6 @@ urlpatterns = [
     path('removeItem/', removeItem, name='removeItem'),
     path('get_cart_data_json/', get_cart_data_json, name='get_cart_data_json'),
     path('cart_total_price/', cart_total_price, name='cart_total_price'),
+    path('cart_items_quantity_increase/', cart_items_quantity_increase, name='cart_items_quantity_increase'),
+    path('cart_items_quantity_decrease/', cart_items_quantity_decrease, name='cart_items_quantity_decrease'),
 ]

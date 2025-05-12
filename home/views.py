@@ -135,7 +135,42 @@ def get_cart_data_json(request):
     except UserCart.DoesNotExist:
         return JsonResponse({"cart_items": []})
 
+@login_required(login_url='/accounts/login')
+def cart_items_quantity_increase(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            cuisine_id = data.get('query')
+            cuisine = get_object_or_404(Cuisine, id=cuisine_id)
+            cart = get_object_or_404(UserCart, user=request.user)
+            cart_item = get_object_or_404(CartItem, cart=cart, cuisine=cuisine)
 
+            cart_item.quantity += 1
+            cart_item.save()
+
+            return JsonResponse({'quantity': cart_item.quantity})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@login_required(login_url='/accounts/login')
+def cart_items_quantity_decrease(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            cuisine_id = data.get('query')
+            cuisine = get_object_or_404(Cuisine, id=cuisine_id)
+            cart = get_object_or_404(UserCart, user=request.user)
+            cart_item = get_object_or_404(CartItem, cart=cart, cuisine=cuisine)
+            if cart_item.quantity > 1:
+                cart_item.quantity -= 1
+            cart_item.save()
+
+            return JsonResponse({'quantity': cart_item.quantity})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+    
 @login_required(login_url='/accounts/login')
 def addToCart(request):
     data = json.loads(request.body)

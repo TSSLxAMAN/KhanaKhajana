@@ -927,56 +927,55 @@
   items_cart.addEventListener("click", function (e) {
     const target = e.target;
 
-    if (
-      target.classList.contains("increase") ||
-      target.classList.contains("decrease")
-    ) {
+    if (target.classList.contains("increase")) {
       e.preventDefault();
       const cuisine_item = target.dataset.id;
       const unit_price = parseInt(
         document.getElementById(`item_price_${cuisine_item}`).textContent
       );
 
-      let new_quantity = 0;
-
-      const quantityInput = document.querySelector(
-        `#item-quantity-${cuisine_item}`
+      fetch(`/cart_items_quantity_increase/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ query: cuisine_item }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          cart_item_quantity = document.getElementById(
+            `item-quantity-${cuisine_item}`
+          );
+          cart_item_quantity.value = response.quantity;
+          item_price = document.getElementById(`item_price_${cuisine_item}`).innerContent
+          console.log(item_price)
+          document.querySelectorAll(`item-total-${cuisine_item}`).innerText = item_price * response.quantity;
+        });
+      updateTotals();
+    }
+    if (target.classList.contains("decrease")) {
+      e.preventDefault();
+      const cuisine_item = target.dataset.id;
+      const unit_price = parseInt(
+        document.getElementById(`item_price_${cuisine_item}`).textContent
       );
 
-      let current_quantity = parseInt(quantityInput.value);
-
-      if (target.classList.contains("increase")) {
-        new_quantity = current_quantity + 1;
-      } else {
-        new_quantity = current_quantity > 1 ? current_quantity - 1 : 1;
-      }
-
-      quantityInput.value = new_quantity;
-
-      const new_total_price = unit_price * new_quantity;
-
-      document
-        .querySelectorAll(`.item-quantity-${cuisine_item}`)
-        .forEach((element) => {
-          if (element.tagName === "INPUT") {
-            element.value = new_quantity;
-          } else {
-            element.textContent = new_quantity;
-          }
+      fetch(`/cart_items_quantity_decrease/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ query: cuisine_item }),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          cart_item_quantity = document.getElementById(
+            `item-quantity-${cuisine_item}`
+          );
+          cart_item_quantity.value = response.quantity;
         });
-      document.querySelectorAll(`.item-total-${cuisine_item}`).forEach((el) => {
-        if (el.tagName === "INPUT") {
-          el.value = new_quantity;
-        } else {
-          el.textContent = new_quantity;
-        }
-      });
-
-      document.querySelectorAll(`.item-total-${cuisine_item}`).forEach((el) => {
-        if (el.tagName === "SPAN") {
-          el.textContent = unit_price * new_quantity;
-        }
-      });
       updateTotals();
     }
   });
@@ -1282,14 +1281,13 @@
         .then((response) => response.json())
         .then((response) => {
           if (response.success === true) {
-            for_COD = response.total
-            console.log(for_COD)
             const orderBtn = document.getElementById("order_btn");
             orderBtn.innerText = `Pay Now ₹ ${response.total}`;
           }
         });
-    } 
-    
+    }
+
+    // COD
     if (paymentSelected && paymentSelected.value === "COD") {
       const cartData = getCartData();
       fetch(`/cart_total_price/`, {
@@ -1305,13 +1303,13 @@
         .then((response) => response.json())
         .then((response) => {
           if (response.success === true) {
-            for_COD = response.total
-            console.log(for_COD)
+            for_COD = response.total;
+            console.log(for_COD);
             const orderBtn = document.getElementById("order_btn");
             orderBtn.innerText = `Pay ₹ ${response.total} to Delivery boy`;
           }
         });
-    } 
+    }
   });
 
   function getCartData() {

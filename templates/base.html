@@ -14,7 +14,6 @@
       href="{% static 'images/featureImage/Logo.png' %}"
       type="image/png"
     />
-    
 
     <title>Khana Khajana</title>
 
@@ -51,12 +50,14 @@
         position: relative;
       }
     </style>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </head>
 
   <body class="flex flex-col min-h-screen">
     <!-- Navbar -->
     <header class="w-full">
-      {% block navbar %} {% include 'navbar.html' %} {% endblock navbar %}
+      {% block navbar %} {% include 'navbar.html' %} 
+      {% endblock navbar %}
     </header>
 
     <!-- Main Content -->

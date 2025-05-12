@@ -94,15 +94,13 @@ def mycart(request):
     try:
         user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
         cart_items = user_cart.items.all()
-        print(cart_items)
-        data = {}
+        for item in cart_items:
+            item.total_price = item.cuisine.price * item.quantity
         is_empty = not user_cart.items.exists()
         cuisines = Cuisine.objects.filter(region="SNACK")
         user_info = UserProfile.objects.get(user=request.user)
         user_address = user_info.address
         user_number = user_info.mobile_number
-        print(user_number)
-        print(user_address)
     except UserCart.DoesNotExist:
         is_empty = True
     return render(request, 'home/mycart.html',{'is_empty': is_empty, 'cart_items': cart_items, 'cuisines':cuisines, 'user_address':user_address, 'user_number':user_number})
@@ -228,20 +226,56 @@ def removeItem(request):
 
 @login_required(login_url='/accounts/login')
 def cart_total_price(request):
+    if request.method == 'GET':
+        try:
+            user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+            cart_items = user_cart.items.all()
+            total = sum(item.cuisine.price * item.quantity for item in cart_items)
+
+            if total < 500:
+                total += 50  
+            total += 18 
+
+            return JsonResponse({"success": True, "total": total})
+        except UserCart.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Cart not found."})
+    return JsonResponse({"success": False, "error": "Invalid request."})    
+
+@login_required(login_url='/accounts/login')
+def create_razorpay_order(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        data_dict = data.get('query')
-        print('data_dict : ',data_dict)
-        total = 0
-        for item in data_dict:
-            cuisine = get_object_or_404(Cuisine, id=item['cuisine_id'])
-            cuisine_price = cuisine.price
-            cuisine_qty = item['quantity']
-            total += cuisine_price * cuisine_qty
-        if total < 500 :
-            total = total + 50 + 18
-        else:
-            total = total + 18  
-        return JsonResponse({"success": True, "total": total})
-    else: 
-        return JsonResponse({"success": False})
+        try:
+            user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+            cart_items = user_cart.items.all()
+            total = sum(item.cuisine.price * item.quantity for item in cart_items)
+
+            # Add delivery and tax
+            if total < 500:
+                total += 50
+            total += 18
+
+            amount_in_paisa = total * 100  # Razorpay expects amount in paise
+
+            razorpay_order = client.order.create({
+                "amount": amount_in_paisa,
+                "currency": "INR",
+                "payment_capture": "1"
+            })
+
+            return JsonResponse({
+                "success": True,
+                "order_id": razorpay_order["id"],
+                "amount": amount_in_paisa,
+                "currency": "INR",
+                "key": settings.RAZORPAY_KEY_ID,
+            })
+
+        except UserCart.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Cart not found."})
+    return JsonResponse({"success": False, "error": "Invalid request."})
+
+@login_required(login_url='/accounts/login')
+def payment_success(request):
+    payment_id = request.GET.get('payment_id')
+    # You can use payment_id to verify and update the order
+    return redirect('myorders')

@@ -272,7 +272,7 @@
               </div>
               <span class="font-medium"
                 >₹<span class="item-subtotal item-total-{{ item.cuisine.id }} "
-                  >{{ item.cuisine.price }}</span
+                  >{{ item.total_price }}</span
                 ></span
               >
             </div>
@@ -790,7 +790,7 @@
               item.cuisine.id
             }" class="font-medium">${
             item.cuisine.price
-          }<span class="text-gray-400 text-sm font-mono italic">/qty</span></span></span>
+          }</span><span class="text-gray-400 text-sm font-mono italic">/qty</span>
           </div>
 
           <div class="w-full md:w-1/5 flex justify-center mb-2 md:mb-0">
@@ -948,11 +948,15 @@
             `item-quantity-${cuisine_item}`
           );
           cart_item_quantity.value = response.quantity;
-          item_price = document.getElementById(`item_price_${cuisine_item}`).innerContent
-          console.log(item_price)
-          document.querySelectorAll(`item-total-${cuisine_item}`).innerText = item_price * response.quantity;
+          item_price = parseFloat(
+            document.getElementById(`item_price_${cuisine_item}`).innerText
+          );
+          item_total = document.querySelectorAll(`.item-total-${cuisine_item}`);
+          item_total.forEach((el) => {
+            el.innerHTML = item_price * response.quantity;
+          });
+          updateTotals();
         });
-      updateTotals();
     }
     if (target.classList.contains("decrease")) {
       e.preventDefault();
@@ -975,8 +979,15 @@
             `item-quantity-${cuisine_item}`
           );
           cart_item_quantity.value = response.quantity;
+          item_price = parseFloat(
+            document.getElementById(`item_price_${cuisine_item}`).innerText
+          );
+          item_total = document.querySelectorAll(`.item-total-${cuisine_item}`);
+          item_total.forEach((el) => {
+            el.innerHTML = item_price * response.quantity;
+          });
+          updateTotals();
         });
-      updateTotals();
     }
   });
 
@@ -1267,67 +1278,85 @@
       'input[name="payment"]:checked'
     );
     if (paymentSelected && paymentSelected.value === "UPI") {
-      const cartData = getCartData();
       fetch(`/cart_total_price/`, {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": "{{ csrf_token }}",
         },
-        body: JSON.stringify({
-          query: cartData,
-        }),
       })
         .then((response) => response.json())
         .then((response) => {
           if (response.success === true) {
             const orderBtn = document.getElementById("order_btn");
+            orderBtn.classList.add("cursor-pointer");
             orderBtn.innerText = `Pay Now ₹ ${response.total}`;
+          } else {
+            alert("Unable to calculate total.");
           }
         });
     }
 
     // COD
     if (paymentSelected && paymentSelected.value === "COD") {
-      const cartData = getCartData();
       fetch(`/cart_total_price/`, {
-        method: "POST",
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
           "X-CSRFToken": "{{ csrf_token }}",
         },
-        body: JSON.stringify({
-          query: cartData,
-        }),
       })
         .then((response) => response.json())
         .then((response) => {
           if (response.success === true) {
-            for_COD = response.total;
-            console.log(for_COD);
             const orderBtn = document.getElementById("order_btn");
-            orderBtn.innerText = `Pay ₹ ${response.total} to Delivery boy`;
+            orderBtn.classList.add("cursor-pointer");
+            orderBtn.innerText = `Pay Now ₹ ${response.total}`;
+          } else {
+            alert("Unable to calculate total.");
           }
         });
     }
   });
+</script>
 
-  function getCartData() {
-    const cartData = [];
-
-    document.querySelectorAll(".cart-item").forEach((item) => {
-      const cuisineId = item.dataset.id;
-      const quantityInput = item.querySelector(`input[id^="item-quantity-"]`);
-      const quantity = parseInt(quantityInput.value);
-
-      cartData.push({
-        cuisine_id: cuisineId,
-        quantity: quantity,
+<script>
+  document.getElementById("order_btn").addEventListener("click", function () {
+    fetch("/create_razorpay_order/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          var options = {
+            key: data.key,
+            amount: data.amount,
+            currency: data.currency,
+            name: "Khana Khajana",
+            description: "Order Payment",
+            order_id: data.order_id,
+            handler: function (response) {
+              // You can store the response.razorpay_payment_id and verify on server
+              alert("Payment Successful!");
+              // Optionally send to Django for order completion
+              window.location.href =
+                "/payment_success/?payment_id=" + response.razorpay_payment_id;
+            },
+            theme: {
+              color: "#F97316",
+            },
+          };
+          var rzp = new Razorpay(options);
+          rzp.open();
+        } else {
+          alert("Failed to create Razorpay order.");
+        }
       });
-    });
-
-    return cartData;
-  }
+  });
 </script>
 
 {% endblock %}

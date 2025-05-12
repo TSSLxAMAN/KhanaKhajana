@@ -16,4 +16,7 @@ urlpatterns = [
     path('cart_total_price/', cart_total_price, name='cart_total_price'),
     path('cart_items_quantity_increase/', cart_items_quantity_increase, name='cart_items_quantity_increase'),
     path('cart_items_quantity_decrease/', cart_items_quantity_decrease, name='cart_items_quantity_decrease'),
+    path('create_razorpay_order/', create_razorpay_order, name='create_razorpay_order'),
+    path('payment_success/', payment_success, name='payment_success'),
+
 ]

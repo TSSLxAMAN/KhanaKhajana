@@ -566,6 +566,9 @@
   .max-h-\[90vh\] {
     max-height: 90vh;
   }
+  .max-h-full {
+    max-height: 100%;
+  }
   .max-h-screen {
     max-height: 100vh;
   }
@@ -637,6 +640,9 @@
   }
   .max-w-7xl {
     max-width: var(--container-7xl);
+  }
+  .max-w-full {
+    max-width: 100%;
   }
   .max-w-md {
     max-width: var(--container-md);
@@ -862,11 +868,19 @@
       border-color: var(--color-gray-200);
     }
   }
+  .divide-orange-200 {
+    :where(& > :not(:last-child)) {
+      border-color: var(--color-orange-200);
+    }
+  }
   .overflow-auto {
     overflow: auto;
   }
   .overflow-hidden {
     overflow: hidden;
+  }
+  .overflow-x-auto {
+    overflow-x: auto;
   }
   .overflow-x-scroll {
     overflow-x: scroll;
@@ -932,6 +946,10 @@
     border-left-style: var(--tw-border-style);
     border-left-width: 4px;
   }
+  .border-dashed {
+    --tw-border-style: dashed;
+    border-style: dashed;
+  }
   .border-none {
     --tw-border-style: none;
     border-style: none;
@@ -954,11 +972,14 @@
   .border-orange-200 {
     border-color: var(--color-orange-200);
   }
-  .border-orange-400 {
-    border-color: var(--color-orange-400);
+  .border-orange-300 {
+    border-color: var(--color-orange-300);
   }
   .border-orange-500 {
     border-color: var(--color-orange-500);
+  }
+  .border-orange-700 {
+    border-color: var(--color-orange-700);
   }
   .border-orange-800 {
     border-color: var(--color-orange-800);
@@ -1627,6 +1648,13 @@
       @media (hover: hover) {
         --tw-gradient-to: var(--color-orange-700);
         --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-position), var(--tw-gradient-from) var(--tw-gradient-from-position), var(--tw-gradient-to) var(--tw-gradient-to-position));
+      }
+    }
+  }
+  .hover\:text-blue-800 {
+    &:hover {
+      @media (hover: hover) {
+        color: var(--color-blue-800);
       }
     }
   }

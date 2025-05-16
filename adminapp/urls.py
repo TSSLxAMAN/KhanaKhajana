@@ -8,8 +8,10 @@ urlpatterns = [
     path('pendingOrders/<uuid:order_id>', pendingOrders, name='pendingOrders_details'),
     path('cancelledOrders/', cancelledOrders, name='cancelledOrders'),
     path('addCusine/', addCusine, name='addCusine'),
+    path('addDriver/', addDriver, name='addDriver'),
     path('userReview/', userReview, name='userReview'),
     path('revenue/', revenue, name='revenue'),
     path('editCuisine/<uuid:cuisine_id>/', editCuisine, name='editCuisine'),
+    path('editDriver/<uuid:driver_id>/', editDriver, name='editDriver'),
     path('start_prepration/', start_prepration, name='start_prepration'),
 ]

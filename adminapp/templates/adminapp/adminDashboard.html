@@ -10,7 +10,7 @@
             <div>
               {% if messages %}
               <div class="mb-6">
-                {% for message in messages %} {% if 'cuisine_edit_success' in message.tags %}
+                {% for message in messages %} {% if 'cuisine' in message.tags %}
                 <div
                   class="{% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %} px-4 py-3 rounded-lg mb-2"
                 >

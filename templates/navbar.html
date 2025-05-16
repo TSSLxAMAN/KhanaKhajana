@@ -38,7 +38,7 @@
             >My Cart</a>
             {% endif %}
             <a href="{% url 'dashboard' %}"
-            class="{% if request.path == '/dashboard/' or request.path == '/adminapp/' or request.path == '/adminapp/ordersCompleted/'  or request.path == '/adminapp/pendingOrders/' or request.path == '/adminapp/addCusine/' or request.path == '/adminapp/userReview/'  or request.path == '/adminapp/revenue/' or request.path == '/myprofile/' or request.path == '/myorders/' or request.path|slice:':9' == '/myorders' or request.path|slice:':23' == '/adminapp/pendingOrders' or request.path == '/cancelledOrders/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold flex mx-2{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline flex mx-2 {% endif %}"
+            class="{% if request.path == '/dashboard/' or request.path == '/adminapp/' or request.path == '/adminapp/ordersCompleted/'  or request.path == '/adminapp/pendingOrders/' or request.path == '/adminapp/addCusine/' or request.path == '/adminapp/userReview/'  or request.path == '/adminapp/revenue/' or request.path == '/myprofile/' or request.path == '/myorders/' or request.path|slice:':9' == '/myorders' or request.path|slice:':23' == '/adminapp/pendingOrders' or request.path == '/cancelledOrders/' or request.path == '/adminapp/addDriver/' %}bg-orange-700 text-white px-3 py-2 rounded-md text-sm font-bold flex mx-2{% else %}text-white font-medium hover:text-orange-200 px-3 py-2 rounded-md text-sm transition duration-300 no-underline flex mx-2 {% endif %}"
             >
             <div class="flex justify-center items-center space-x-2">
               <p class="mr-2">Dashboard</p>

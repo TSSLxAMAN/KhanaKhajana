@@ -86,3 +86,23 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.cuisine.cusine_name}"
+
+class Driver(models.Model):
+    GENDER = [
+         ('MALE' , 'MALE'),
+         ('FEMALE' , 'FEMALE'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='driver_profile', null=True, blank=True)
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 
+    username = models.CharField(max_length=16, blank=True, null=True)
+    driver_name =  models.CharField(max_length=255)
+    mobile_number = models.IntegerField()
+    driver_image = models.ImageField(upload_to='images/driver_images/')
+    gender = models.CharField(choices=GENDER, max_length=7)
+
+class Driver_Delivery(models.Model):
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 
+    driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True, related_name='deliveries', blank=True)
+    order_id = models.ForeignKey(OrderCreated,on_delete=models.CASCADE, related_name='orders', null=True)
+    delivery_otp = models.CharField(max_length=6, blank=True, null=True)
+    delivered_at = models.DateTimeField(blank=True, null=True)  # Optional: add timestamp

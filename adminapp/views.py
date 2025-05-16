@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import Cuisine_Form
+from .forms import Cuisine_Form, DriverForm
 from .models import *
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
@@ -75,6 +75,21 @@ def userReview(request):
 
 @never_cache
 @login_required(login_url='/accounts/login')
+def addDriver(request):
+    drivers = Driver.objects.all()
+    if request.method == 'POST':
+        driver_form = DriverForm(request.POST, request.FILES)
+        if driver_form.is_valid():
+            driver_form.save()
+            messages.success(request, "Driver added successfully!",extra_tags='driver')
+            driver_form = DriverForm()  
+    else:
+        driver_form = DriverForm()
+    
+    return render(request, 'adminapp/addDriver.html',{'drivers':drivers,'form':driver_form})
+
+@never_cache
+@login_required(login_url='/accounts/login')
 def revenue(request):
     return render(request, 'adminapp/revenue.html')
 
@@ -93,6 +108,28 @@ def editCuisine(request,cuisine_id):
                 'price' : cuisine.price,
                 'time' : cuisine.time,
                 'cusine_image' : cuisine.cusine_image.url
+            }
+            return JsonResponse(data)
+        except Cuisine.DoesNotExist:
+            return JsonResponse({'error':'Cuisine not found'})
+
+@never_cache
+@login_required(login_url='/accounts/login')
+def editDriver(request,driver_id):
+    if request.method == 'GET':
+        try:
+            driver = Driver.objects.get(id=driver_id)
+            username = driver.username
+            user_password = User.objects.get(username=username)
+            password = user_password.password
+            data = {
+                'id' : driver.id,
+                'username':username,
+                'password':password,
+                'driver_name' : driver.driver_name,
+                'mobile_number' : driver.mobile_number,
+                'gender' : driver.gender,
+                'driver_image' : driver.driver_image.url
             }
             return JsonResponse(data)
         except Cuisine.DoesNotExist:

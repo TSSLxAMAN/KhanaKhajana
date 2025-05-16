@@ -61,7 +61,7 @@
             <li>
               <a
                 href="{% url "myorders" %}"
-                class="{% if request.path == '/myorders/' %}flex items-center bg-orange-200 rounded-xl font-bold text-sm text-orange-900 py-3 px-4 {% else %}flex items-center  rounded-xl font-bold text-sm py-3 px-4{% endif %}"
+                class="{% if request.path|slice:':9' == '/myorders' %}flex items-center bg-orange-200 rounded-xl font-bold text-sm text-orange-900 py-3 px-4 {% else %}flex items-center  rounded-xl font-bold text-sm py-3 px-4{% endif %}"
               >
                 <svg
                   fill="#000000"

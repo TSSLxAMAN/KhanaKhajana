@@ -9,6 +9,7 @@ urlpatterns = [
     path('dashboard/', dashboard, name='dashboard'), 
     path('myprofile/', myprofile, name='myprofile'), 
     path('myorders/', myorders, name='myorders'), 
+    path('myorders/<uuid:order_id>', myorders, name='myorders_detail'), 
     path('mycart/', mycart, name='mycart'), 
     path('addToCart/', addToCart, name='addToCart'), 
     path('removeItem/', removeItem, name='removeItem'),
@@ -18,5 +19,6 @@ urlpatterns = [
     path('cart_items_quantity_decrease/', cart_items_quantity_decrease, name='cart_items_quantity_decrease'),
     path('create_razorpay_order/', create_razorpay_order, name='create_razorpay_order'),
     path('payment_success/', payment_success, name='payment_success'),
+    path('create_cod_order/', create_cod_order, name='create_cod_order'),
 
 ]

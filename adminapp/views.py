@@ -39,8 +39,18 @@ def ordersCompleted(request):
 
 @never_cache
 @login_required(login_url='/accounts/login')
-def pendingOrders(request):
-    return render(request, 'adminapp/pendingOrders.html')
+def pendingOrders(request, order_id=None):
+    if order_id:
+        pendingOrder = OrderCreated.objects.get(id=order_id)
+        return render(request, 'adminapp/particular_pendingOrder.html', {'order': pendingOrder})
+    else:
+        pendingOrders = OrderCreated.objects.filter(is_delivered=False).order_by('-order_date')
+        return render(request, 'adminapp/pendingOrders.html', {'pendingOrders':pendingOrders})
+
+@never_cache
+@login_required(login_url='/accounts/login')
+def cancelledOrders(request):
+    return render(request, 'adminapp/cancelledOrders.html')
 
 @never_cache
 @login_required(login_url='/accounts/login')

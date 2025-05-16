@@ -7,15 +7,19 @@ from django.contrib import messages
 from django.conf import settings
 from django.shortcuts import get_object_or_404
 
+from .utils import send_otp_via_sms
+
 from .forms import CustomSetPasswordForm
 from .forms import SetAddressForm, SetMobileForm
 
 from .models import *
 
-from adminapp.models import Cuisine, UserProfile
+from adminapp.models import Cuisine, UserProfile, OrderCreated, OrderItem
 
 import json
 import razorpay
+import random
+
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
 # Create your views here.
@@ -35,8 +39,14 @@ def contact(request):
 def myprofile(request):
     return render(request, 'home/myprofile.html')
 
-def myorders(request):
-    return render(request, 'home/myorders.html')
+@login_required(login_url='/accounts/login')
+def myorders(request, order_id=None):
+    if order_id:
+        order_created = get_object_or_404(OrderCreated, id=order_id, user=request.user)
+        return render(request, 'home/particular_order.html', {'order_created': order_created})
+    else:
+        all_orders = OrderCreated.objects.filter(user=request.user).order_by('-order_date')
+        return render(request, 'home/myorders.html', {'orders': all_orders})
 
 
 @never_cache
@@ -92,7 +102,7 @@ def mycart(request):
     user_address = None
     user_number = None
     try:
-        user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+        user_cart = UserCart.objects.get(user=request.user)
         cart_items = user_cart.items.all()
         for item in cart_items:
             item.total_price = item.cuisine.price * item.quantity
@@ -109,7 +119,7 @@ def mycart(request):
 @login_required(login_url='/accounts/login')
 def get_cart_data_json(request):
     try:
-        user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+        user_cart = UserCart.objects.get(user=request.user)
         cart_items = user_cart.items.select_related('cuisine')
 
         data = []
@@ -175,7 +185,7 @@ def addToCart(request):
     cuisine_id = data.get('query')
     if request.method == 'POST':
         try:
-            user_cart, created = UserCart.objects.get_or_create(user=request.user, is_ordered=False)           
+            user_cart, created = UserCart.objects.get_or_create(user=request.user)           
             cuisine = Cuisine.objects.get(id=cuisine_id)
             
             if CartItem.objects.filter(cart=user_cart, cuisine=cuisine).exists():
@@ -213,7 +223,7 @@ def removeItem(request):
         if not cuisine_id:
             return JsonResponse({'success': False, 'error': 'Invalid cuisine ID'}, status=400)
 
-        user_cart, created = UserCart.objects.get_or_create(user=request.user, is_ordered=False)
+        user_cart, created = UserCart.objects.get_or_create(user=request.user)
         cuisine = Cuisine.objects.get(id=cuisine_id)
         CartItem.objects.filter(cart=user_cart, cuisine=cuisine).delete()
         return JsonResponse({'success': True})
@@ -228,7 +238,7 @@ def removeItem(request):
 def cart_total_price(request):
     if request.method == 'GET':
         try:
-            user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+            user_cart = UserCart.objects.get(user=request.user)
             cart_items = user_cart.items.all()
             total = sum(item.cuisine.price * item.quantity for item in cart_items)
 
@@ -245,16 +255,15 @@ def cart_total_price(request):
 def create_razorpay_order(request):
     if request.method == 'POST':
         try:
-            user_cart = UserCart.objects.get(user=request.user, is_ordered=False)
+            user_cart = UserCart.objects.get(user=request.user)
             cart_items = user_cart.items.all()
             total = sum(item.cuisine.price * item.quantity for item in cart_items)
 
-            # Add delivery and tax
             if total < 500:
                 total += 50
             total += 18
 
-            amount_in_paisa = total * 100  # Razorpay expects amount in paise
+            amount_in_paisa = total * 100
 
             razorpay_order = client.order.create({
                 "amount": amount_in_paisa,
@@ -277,5 +286,90 @@ def create_razorpay_order(request):
 @login_required(login_url='/accounts/login')
 def payment_success(request):
     payment_id = request.GET.get('payment_id')
-    # You can use payment_id to verify and update the order
-    return redirect('myorders')
+    user_info = UserProfile.objects.get(user=request.user)
+    address = user_info.address
+    mobile_number = user_info.mobile_number
+    try:
+        user_cart = UserCart.objects.get(user=request.user)
+        cart_items = user_cart.items.all()
+        total = sum(item.cuisine.price * item.quantity for item in cart_items)
+        if total < 500:
+            total += 50
+        total += 18
+
+        otp = str(random.randint(100000, 999999))
+        order = OrderCreated.objects.create(
+            user=request.user,
+            total_amount=total,
+            payment_id=payment_id,
+            is_paid=True,
+            delivery_address=address,
+            phone_number=mobile_number,
+            delivery_otp=otp,
+        )
+
+        sms_response = send_otp_via_sms(mobile_number, otp)
+        
+        for item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                cuisine=item.cuisine,
+                quantity=item.quantity,
+            )
+
+        user_cart.is_ordered = True
+        user_cart.save()
+        cart_items.delete()
+
+        messages.success(request, "Payment successful! Order placed.")
+        return redirect('myorders')
+
+    except UserCart.DoesNotExist:
+        messages.error(request, "No active cart found.")
+        return JsonResponse({'msg':'some error occured'})
+    
+@login_required(login_url='/accounts/login')
+def create_cod_order(request):
+    if request.method == 'POST':
+        user_info = UserProfile.objects.get(user=request.user)
+        address = user_info.address
+        mobile_number = user_info.mobile_number
+        try:
+            user_cart = UserCart.objects.get(user=request.user)
+            cart_items = user_cart.items.all()
+            total = sum(item.cuisine.price * item.quantity for item in cart_items)
+
+            if total < 500:
+                total += 50
+            total += 18
+    
+            otp = str(random.randint(100000, 999999))
+
+            order = OrderCreated.objects.create(
+                user=request.user,
+                total_amount=total,
+                is_paid=False,
+                payment_id=None,
+                delivery_address=address,
+                phone_number=mobile_number,
+                delivery_otp=otp,
+            )
+            
+            sms_response = send_otp_via_sms(mobile_number, (otp))
+
+            for item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    cuisine=item.cuisine,
+                    quantity=item.quantity,
+                )
+
+            user_cart.is_ordered = True
+            user_cart.save()
+            cart_items.delete()
+
+            return JsonResponse({"success": True})
+        except UserCart.DoesNotExist:
+            return JsonResponse({"success": False, "error": "No active cart found."})
+
+    return JsonResponse({"success": False, "error": "Invalid request method."})

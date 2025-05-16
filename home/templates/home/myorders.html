@@ -5,7 +5,99 @@
     <div class="px-6 py-8">
       <div class="max-w-4xl mx-auto">
         <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm">
-           <h2 class="text-2xl font-bold mb-4 text-orange-800">My Orders</h2>
+          <h2 class="text-2xl font-bold mb-4 text-orange-800">My Orders</h2>
+          
+          {% if user.orders.all %}
+            <div class="space-y-4">
+              {% for order in user.orders.all %}
+                <div class="bg-white border border-orange-200 rounded-xl  hover:shadow-md transition-shadow duration-200 hover:bg-orange-50">
+                  <div class="p-4 sm:p-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-grow">
+                        <div class="flex -space-x-2 overflow-hidden">
+                          {% for order_item in order.orderitem_set.all|slice:":3" %}
+                            <div class="w-16 h-16 rounded-full border-2 border-white overflow-hidden">
+                              {% if order_item.cuisine.cusine_image %}
+                                <img src="{{ order_item.cuisine.cusine_image.url }}" alt="{{ order_item.cuisine.cusine_name }}" class="w-full h-full object-cover">
+                              {% else %}
+                                <div class="w-full h-full bg-orange-200 flex items-center justify-center text-orange-700">
+                                  <span class="text-xs">No image</span>
+                                </div>
+                              {% endif %}
+                            </div>
+                          {% endfor %}
+                          
+                          {% if order.orderitem_set.count > 3 %}
+                            <div class="w-16 h-16 rounded-full border-2 border-white bg-orange-100 flex items-center justify-center">
+                              <span class="text-sm font-medium text-orange-800">+{{ order.orderitem_set.count|add:"-3" }}</span>
+                            </div>
+                          {% endif %}
+                        </div>
+                        
+                        <div class="flex-grow">
+                          <p class="text-sm text-gray-600">
+                            {{ order.order_date|date:"M d, Y" }} at {{ order.order_date|time:"g:i A" }}
+                          </p>
+                          <div class="mt-2 flex flex-wrap gap-2">
+                            {% for order_item in order.orderitem_set.all|slice:":2" %}
+                              <span class="text-sm text-gray-700">{{ order_item.cuisine.cusine_name }}{% if not forloop.last %},{% endif %}</span>
+                            {% endfor %}
+                            {% if order.orderitem_set.count > 2 %}
+                              <span class="text-sm text-gray-700">+ {{ order.orderitem_set.count|add:"-2" }} more</span>
+                            {% endif %}
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div class="flex flex-col sm:flex-row items-end sm:items-center gap-3 sm:gap-4 ml-auto">
+                        <div class="text-right">
+                          <p class="font-medium text-orange-800">₹{{ order.total_amount }}</p>
+                          {% if order.is_paid %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                              Paid
+                            </span>
+                          {% else %}
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-300 text-orange-800">
+                              COD
+                            </span>
+                          {% endif %}
+                        </div>
+                        
+                        <a href={% url "myorders_detail" order_id=order.id %} class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-orange-100 hover:bg-orange-200 text-orange-700 transition-colors duration-200">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                    
+                    <div class="mt-4 pt-2 border-t border-orange-200">
+                      {% if order.is_delivered %}
+                      <p class="text-sm text-green-400">Order Delivered</p>
+                      {% else %}
+                      <p class="text-sm text-orange-400">On your way</p>
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="text-center py-12 px-4">
+              <div class="mx-auto h-24 w-24 rounded-full bg-orange-100 flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-orange-600">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h3 class="mt-4 text-lg font-medium text-gray-900">No orders yet</h3>
+              <p class="mt-1 text-sm text-gray-500">You haven't placed any orders yet.</p>
+              <div class="mt-6">
+                <a href="{% url 'cuisine' %}" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-orange-600 hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500">
+                  Browse Cuisine
+                </a>
+              </div>
+            </div>
+          {% endif %}
         </div>
       </div>
     </div>

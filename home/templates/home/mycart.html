@@ -702,7 +702,6 @@
   })
     .then((response) => response.json())
     .then((response) => {
-      console.log(response.cart_items.length);
       const items_cart = document.getElementById("items_cart");
       if (response.cart_items.length === 0) {
         document.getElementById("spinner").classList.add("hidden");
@@ -1016,7 +1015,6 @@
     })
       .then((response) => response.json())
       .then((response) => {
-        // Either rerender or directly remove from DOM
         const itemRow = document.getElementById(`cart-item-${cuisine_id}`);
         if (itemRow) itemRow.remove();
 
@@ -1036,7 +1034,64 @@
         updateTotals();
       })
       .catch((error) => {
-        console.error("Remove error:", error);
+        const order_summary = document.getElementById("order-summary");
+        const items_cart = document.getElementById("items_cart");
+        const html = `<div class="text-gray-500 text-sm italic">No items in cart</div>`;
+        order_summary.innerHTML += html;
+        items_cart.innerHTML = `
+            <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                <div class="flex flex-col items-center justify-center py-12">
+                  <div class="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-12 w-12 text-orange-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                  </div>
+
+                  <h2 class="text-2xl font-bold text-gray-700 mb-2">
+                    Your cart is empty
+                  </h2>
+                  <p class="text-gray-500 mb-8">
+                    No orders are available right now.
+                  </p>
+
+                  <a
+                    href="{% url 'cuisine' %}"
+                    class="bg-gradient-to-r from-orange-600 to-orange-400 text-white font-medium py-3 px-6 rounded-md transition duration-300 flex items-center space-x-2 mt-3"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>Browse Cuisine</span>
+                  </a>
+                </div>
+              </div>
+        `;
+        const suggestionDiv = document.getElementById("suggestionDiv");
+        const opendrawerbutton = document.getElementById("open-drawer-button");
+        suggestionDiv.classList.add("hidden");
+        opendrawerbutton.classList.add("hidden");
       });
   });
 </script>
@@ -1273,6 +1328,7 @@
     });
   });
 
+  // Online
   orderBtn.addEventListener("click", () => {
     const paymentSelected = document.querySelector(
       'input[name="payment"]:checked'
@@ -1311,7 +1367,7 @@
           if (response.success === true) {
             const orderBtn = document.getElementById("order_btn");
             orderBtn.classList.add("cursor-pointer");
-            orderBtn.innerText = `Pay Now ₹ ${response.total}`;
+            orderBtn.innerText = `Pay ₹ ${response.total} to delivery boy`;
           } else {
             alert("Unable to calculate total.");
           }
@@ -1322,40 +1378,68 @@
 
 <script>
   document.getElementById("order_btn").addEventListener("click", function () {
-    fetch("/create_razorpay_order/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": "{{ csrf_token }}",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          var options = {
-            key: data.key,
-            amount: data.amount,
-            currency: data.currency,
-            name: "Khana Khajana",
-            description: "Order Payment",
-            order_id: data.order_id,
-            handler: function (response) {
-              // You can store the response.razorpay_payment_id and verify on server
-              alert("Payment Successful!");
-              // Optionally send to Django for order completion
-              window.location.href =
-                "/payment_success/?payment_id=" + response.razorpay_payment_id;
-            },
-            theme: {
-              color: "#F97316",
-            },
-          };
-          var rzp = new Razorpay(options);
-          rzp.open();
-        } else {
-          alert("Failed to create Razorpay order.");
-        }
-      });
+    const paymentSelected = document.querySelector(
+      'input[name="payment"]:checked'
+    );
+    if (paymentSelected && paymentSelected.value === "UPI") {
+      fetch("/create_razorpay_order/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            var options = {
+              key: data.key,
+              amount: data.amount,
+              currency: data.currency,
+              name: "Khana Khajana",
+              description: "Order Payment",
+              order_id: data.order_id,
+              handler: function (response) {
+                alert("Payment Successful!");
+                window.location.href =
+                  "/payment_success/?payment_id=" +
+                  response.razorpay_payment_id;
+              },
+              theme: {
+                color: "#F97316",
+              },
+            };
+            var rzp = new Razorpay(options);
+            rzp.open();
+          } else {
+            alert("Failed to create Razorpay order.");
+          }
+        });
+    }
+  });
+
+  document.getElementById("order_btn").addEventListener("click", function () {
+    const paymentSelected = document.querySelector(
+      'input[name="payment"]:checked'
+    );
+    if (paymentSelected && paymentSelected.value === "COD") {
+      fetch("/create_cod_order/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            alert("Order placed successfully with Cash on Delivery!");
+            window.location.href = "/myorders/";
+          } else {
+            alert("Failed to place COD order.");
+          }
+        });
+    }
   });
 </script>
 

@@ -173,3 +173,9 @@ from decouple import config
 RAZORPAY_KEY_ID = config("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = config("RAZORPAY_KEY_SECRET")
 
+TWILIO_ACCOUNT_SID = config('ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = config('PHONE_NUMBER')
+
+TIME_ZONE = 'Asia/Kolkata'
+USE_TZ = True

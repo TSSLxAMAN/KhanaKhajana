@@ -940,7 +940,7 @@
           "X-CSRFToken": "{{ csrf_token }}",
         },
         body: JSON.stringify({ query: cuisine_item }),
-      })
+      })  
         .then((response) => response.json())
         .then((response) => {
           cart_item_quantity = document.getElementById(

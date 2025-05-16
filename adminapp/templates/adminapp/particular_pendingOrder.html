@@ -1,49 +1,71 @@
-{% extends "adminapp/adminBase.html" %}
-{% block admindashboard %}
-{% load static %}
+{% extends "adminapp/adminBase.html" %} {% block admindashboard %} {% load static %}
 
 <div class="grid grid-cols-12 bg-orange-50 min-h-screen">
   <div class="col-span-12 max-h-screen overflow-auto w-full">
     <div class="px-6 py-8">
       <div class="max-w-6xl mx-auto">
         <!-- Back Button -->
-        <a href="{% url 'pendingOrders' %}" class="inline-flex items-center mb-6 text-orange-700 hover:text-orange-800 transition-colors duration-200">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        <a
+          href="{% url 'pendingOrders' %}"
+          class="inline-flex items-center mb-6 text-orange-700 hover:text-orange-800 transition-colors duration-200"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-5 w-5 mr-2"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            />
           </svg>
           Back to Orders
         </a>
-        
+
         <!-- Order Info Card -->
         <div class="bg-white rounded-3xl p-8 mb-6 shadow-md">
           <div class="flex justify-between items-start mb-6">
             <div>
-              <h2 class="text-3xl font-bold text-orange-800">Order #{{ order.id|truncatechars:8 }}</h2>
-              <p class="text-gray-600">Placed on {{ order.order_date|date:"M d, Y • h:i A" }}</p>
+              <h2 class="text-3xl font-bold text-orange-800">
+                Order #{{ order.id|truncatechars:8 }}
+              </h2>
+              <p class="text-gray-600">
+                Placed on {{ order.order_date|date:"M d, Y • h:i A" }}
+              </p>
             </div>
             <div class="text-right">
-              <span class="bg-orange-100 text-orange-800 px-4 py-1 rounded-full font-medium text-sm">
-                {% if order.is_delivered %}Delivered
-                {% elif order.is_out_for_delivery %}Out for Delivery
-                {% elif order.is_cooking_completed %}Cooking Completed
-                {% elif order.is_started %}Preparation Started
-                {% elif order.is_cancelled %}Cancelled
-                {% else %}Order Received
-                {% endif %}
+              <span
+                class="bg-orange-100 text-orange-800 px-4 py-1 rounded-full font-medium text-sm"
+              >
+                {% if order.is_delivered %}Delivered {% elif order.is_out_for_delivery %}
+                Out for Delivery {% elif order.is_cooking_completed %}
+                Cooking Completed {% elif order.is_started %}
+                Preparation Started {% elif order.is_cancelled %}
+                Cancelled {% else %}Order Received {% endif %}
               </span>
-              <p class="mt-2 font-bold text-2xl text-orange-700">₹{{ order.total_amount }}</p>
-              <p class="text-sm {% if order.is_paid %}text-green-600{% else %}text-red-600{% endif %}">
+              <p class="mt-2 font-bold text-2xl text-orange-700">
+                ₹{{ order.total_amount }}
+              </p>
+              <p
+                class="text-sm {% if order.is_paid %}text-green-600{% else %}text-red-600{% endif %}"
+              >
                 {% if order.is_paid %}Paid{% else %}Payment Pending{% endif %}
                 {% if order.payment_id %}
-                  <span class="text-gray-600"> • {{ order.payment_id }}</span>
+                <span class="text-gray-600"> • {{ order.payment_id }}</span>
                 {% endif %}
               </p>
             </div>
           </div>
-          
+
           <!-- Customer Information -->
           <div class="bg-orange-50 p-6 rounded-xl mb-8">
-            <h3 class="text-xl font-semibold text-orange-800 mb-4">Customer Information</h3>
+            <h3 class="text-xl font-semibold text-orange-800 mb-4">
+              Customer Information
+            </h3>
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <p class="font-medium text-orange-700 mb-1">Customer</p>
@@ -60,188 +82,339 @@
               </div>
             </div>
           </div>
-          
+
           <!-- Order Items -->
           <div class="mb-8">
-            <h3 class="text-xl font-semibold text-orange-800 mb-4">Order Items</h3>
-            <div class="bg-white border border-orange-100 rounded-xl overflow-hidden">
+            <h3 class="text-xl font-semibold text-orange-800 mb-4">
+              Order Items
+            </h3>
+            <div
+              class="bg-white border border-orange-100 rounded-xl overflow-hidden"
+            >
               <table class="min-w-full">
                 <thead>
                   <tr class="bg-orange-50">
-                    <th class="py-3 px-6 text-left text-sm font-semibold text-orange-800">Item</th>
-                    <th class="py-3 px-6 text-center text-sm font-semibold text-orange-800">Quantity</th>
-                    <th class="py-3 px-6 text-right text-sm font-semibold text-orange-800">Price</th>
+                    <th
+                      class="py-3 px-6 text-left text-sm font-semibold text-orange-800"
+                    >
+                      Item
+                    </th>
+                    <th
+                      class="py-3 px-6 text-center text-sm font-semibold text-orange-800"
+                    >
+                      Quantity
+                    </th>
+                    <th
+                      class="py-3 px-6 text-right text-sm font-semibold text-orange-800"
+                    >
+                      Price
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {% for item in order.orderitem_set.all %}
-                    <tr class="border-t border-orange-100">
-                      <td class="py-4 px-6 text-gray-800">{{ item.cuisine.cusine_name }}</td>
-                      <td class="py-4 px-6 text-center text-gray-800">{{ item.quantity }}</td>
-                      <td class="py-4 px-6 text-right text-gray-800">₹{{ item.cuisine.price }}</td>
-                    </tr>
+                  <tr class="border-t border-orange-100">
+                    <td class="py-4 px-6 text-gray-800">
+                      {{ item.cuisine.cusine_name }}
+                    </td>
+                    <td class="py-4 px-6 text-center text-gray-800">
+                      {{ item.quantity }}
+                    </td>
+                    <td class="py-4 px-6 text-right text-gray-800">
+                      ₹{{ item.cuisine.price }}
+                    </td>
+                  </tr>
                   {% endfor %}
                   <tr class="border-t border-orange-200 bg-orange-50">
-                    <td colspan="2" class="py-4 px-6 text-right font-semibold text-orange-800">Total Amount</td>
-                    <td class="py-4 px-6 text-right font-bold text-orange-800">₹{{ order.total_amount }}</td>
+                    <td
+                      colspan="2"
+                      class="py-4 px-6 text-right font-semibold text-orange-800"
+                    >
+                      Total Amount
+                    </td>
+                    <td class="py-4 px-6 text-right font-bold text-orange-800">
+                      ₹{{ order.total_amount }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-        
+
         <!-- Order Tracking Section -->
         <div class="bg-white rounded-3xl p-8 mb-6 shadow-md">
-          <h3 class="text-2xl font-bold text-orange-800 mb-6">Order Tracking</h3>
-          
+          <h3 class="text-2xl font-bold text-orange-800 mb-6">
+            Order Tracking
+          </h3>
+
           <div class="mb-8">
             <div class="relative">
               <!-- Progress Bar -->
-              <div class="hidden sm:block absolute top-0 inset-x-0 h-1 bg-orange-100 rounded-full">
-                <div class="absolute top-0 left-0 h-1 bg-orange-600 rounded-full transition-all duration-500" style="width: 
+              <div
+                class="hidden sm:block absolute top-0 inset-x-0 h-1 bg-orange-100 rounded-full"
+              >
+                <div
+                  class="absolute top-0 left-0 h-1 bg-orange-600 rounded-full transition-all duration-500"
+                  style="width: 
                 {% if order.is_delivered %}100%
                 {% elif order.is_out_for_delivery %}75%
                 {% elif order.is_cooking_completed %}50%
                 {% elif order.is_started %}25%
                 {% else %}0%
-                {% endif %}"></div>
+                {% endif %}"
+                ></div>
               </div>
-              
+
               <!-- Step Items -->
               <div class="grid grid-cols-1 md:grid-cols-4 gap-4 pt-8">
                 <!-- Step 1: Order Received -->
                 <div class="flex flex-col items-center relative">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_received %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10">
+                  <div
+                    class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_received %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
+                  >
                     {% if order.is_received %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    {% else %}
-                      1
-                    {% endif %}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {% else %} 1 {% endif %}
                   </div>
                   <div class="mt-4 text-center">
-                    <h4 class="font-semibold text-orange-800">Order Received</h4>
+                    <h4 class="font-semibold text-orange-800">
+                      Order Received
+                    </h4>
                     {% if order.received_at %}
-                      <p class="text-sm text-gray-600">{{ order.received_at|date:"M d, Y • h:i A" }}</p>
+                    <p class="text-sm text-gray-600">
+                      {{ order.received_at|date:"M d, Y • h:i A" }}
+                    </p>
                     {% endif %}
                   </div>
                   <div class="absolute top-32 left-0 w-full">
                     {% if order.is_received and not order.is_started %}
-                      <input type="hidden" name="status" value="start_preparation">
-                      <button data-id={{order.id}} type="button" id="start_preparation" class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md">
-                        Start Preparation
-                      </button>
+                    <input
+                      type="hidden"
+                      name="status"
+                      value="start_preparation"
+                    />
+                    <button
+                      data-id="{{ order.id }}"
+                      type="button"
+                      id="start_preparation"
+                      class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
+                    >
+                      Start Preparation
+                    </button>
                     {% endif %}
                   </div>
                 </div>
-                
+
                 <!-- Step 2: Preparation Started -->
                 <div class="flex flex-col items-center relative">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_started %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10">
+                  <div
+                    class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_started %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
+                  >
                     {% if order.is_started %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    {% else %}
-                      2
-                    {% endif %}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {% else %} 2 {% endif %}
                   </div>
                   <div class="mt-4 text-center">
-                    <h4 class="font-semibold text-orange-800">Preparation Started</h4>
+                    <h4 class="font-semibold text-orange-800">
+                      Preparation Started
+                    </h4>
                     {% if order.started_at %}
-                      <p class="text-sm text-gray-600">{{ order.started_at|date:"M d, Y • h:i A" }}</p>
+                    <p class="text-sm text-gray-600">
+                      {{ order.started_at|date:"M d, Y • h:i A" }}
+                    </p>
                     {% endif %}
                   </div>
                   <div class="absolute top-32 left-0 w-full">
                     {% if order.is_started and not order.is_cooking_completed %}
-                      <input type="hidden" name="status" value="complete_cooking">
-                      <button type="button" data-id={{order.id}} id="complete_cooking" class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md">
-                        Complete Cooking
-                      </button>
+                    <input
+                      type="hidden"
+                      name="status"
+                      value="complete_cooking"
+                    />
+                    <button
+                      type="button"
+                      data-id="{{ order.id }}"
+                      id="complete_cooking"
+                      class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
+                    >
+                      Complete Cooking
+                    </button>
                     {% endif %}
                   </div>
                 </div>
-                
+
                 <!-- Step 3: Cooking Completed -->
                 <div class="flex flex-col items-center relative">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_cooking_completed %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10">
+                  <div
+                    class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_cooking_completed %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
+                  >
                     {% if order.is_cooking_completed %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
-                    {% else %}
-                      3
-                    {% endif %}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {% else %} 3 {% endif %}
                   </div>
                   <div class="mt-4 text-center">
-                    <h4 class="font-semibold text-orange-800">Cooking Completed</h4>
+                    <h4 class="font-semibold text-orange-800">
+                      Cooking Completed
+                    </h4>
                     {% if order.cooking_completed_at %}
-                      <p class="text-sm text-gray-600">{{ order.cooking_completed_at|date:"M d, Y • h:i A" }}</p>
+                    <p class="text-sm text-gray-600">
+                      {{ order.cooking_completed_at|date:"M d, Y • h:i A" }}
+                    </p>
                     {% endif %}
                   </div>
                   <div class="absolute top-32 left-0 w-full">
                     {% if order.is_cooking_completed and not order.is_out_for_delivery %}
-                   
-                      <input type="hidden" name="status" value="out_for_delivery">
-                      <div class="mb-2">
-                        <input type="text" name="delivery_person" placeholder="Delivery Person Name" class="w-full p-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500" required>
-                      </div>
-                      <button type="button" data-id={{ order.id }} id="out_for_delivery" class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md">
-                        Send for Delivery
-                      </button>
+
+                    <input
+                      type="hidden"
+                      name="status"
+                      value="out_for_delivery"
+                    />
+                    <div class="mb-2">
+                      <input
+                        type="text"
+                        name="delivery_person"
+                        placeholder="Delivery Person Name"
+                        class="w-full p-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        required
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      data-id="{{ order.id }}"
+                      id="out_for_delivery"
+                      class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
+                    >
+                      Send for Delivery
+                    </button>
                     {% endif %}
                   </div>
                 </div>
-                
+
                 <!-- Step 4: Out for Delivery -->
                 <div class="flex flex-col items-center relative">
-                  <div class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_out_for_delivery %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10">
+                  <div
+                    class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_out_for_delivery %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
+                  >
                     {% if order.is_delivered %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                      </svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
                     {% elif order.is_out_for_delivery %}
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                      </svg>
-                    {% else %}
-                      4
-                    {% endif %}
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-6 w-6"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 10V3L4 14h7v7l9-11h-7z"
+                      />
+                    </svg>
+                    {% else %} 4 {% endif %}
                   </div>
                   <div class="mt-4 text-center">
                     <h4 class="font-semibold text-orange-800">
-                      {% if order.is_delivered %}Delivered{% else %}Out for Delivery{% endif %}
+                      {% if order.is_delivered %}Delivered{% else %}Out for
+                      Delivery{% endif %}
                     </h4>
                     {% if order.out_for_delivery_at %}
-                      <p class="text-sm text-gray-600">{{ order.out_for_delivery_at|date:"M d, Y • h:i A" }}</p>
-                    {% endif %}
-                    {% if order.delivered_at %}
-                      <p class="text-sm font-medium text-green-600">Delivered at {{ order.delivered_at|date:"h:i A" }}</p>
+                    <p class="text-sm text-gray-600">
+                      {{ order.out_for_delivery_at|date:"M d, Y • h:i A" }}
+                    </p>
+                    {% endif %} {% if order.delivered_at %}
+                    <p class="text-sm font-medium text-green-600">
+                      Delivered at {{ order.delivered_at|date:"h:i A" }}
+                    </p>
                     {% endif %}
                   </div>
                   <div class="absolute top-32 left-0 w-full">
                     {% if order.is_out_for_delivery and not order.is_delivered %}
-                    <p class="text-center text-gray-600 text-sm mb-2">OTP: <span class="font-bold">{{ order.delivery_otp }}</span></p>
-                      <input type="hidden" name="status" value="delivered">
-                      <button type="button" data-id={{ order.id }} id="select_driver" class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md">
-                        Mark as Delivered
-                      </button>
+                    <p class="text-center text-gray-600 text-sm mb-2">
+                      OTP:
+                      <span class="font-bold">{{ order.delivery_otp }}</span>
+                    </p>
+                    <input type="hidden" name="status" value="delivered" />
+                    <button
+                      type="button"
+                      data-id="{{ order.id }}"
+                      id="select_driver"
+                      class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
+                    >
+                      Mark as Delivered
+                    </button>
                     {% endif %}
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <!-- Cancel Order Button (if not delivered or cancelled) -->
           {% if not order.is_started and not order.is_cancelled %}
           <div class="flex justify-end mt-8">
-              <input type="hidden" name="status" value="cancel">
-              <button type="button" class="bg-red-600 hover:bg-red-700 transition-colors text-white rounded-lg py-2 px-6 shadow-md">
-                Cancel Order
-              </button>
+            <input type="hidden" name="status" value="cancel" />
+            <button
+              type="button"
+              class="bg-red-600 hover:bg-red-700 transition-colors text-white rounded-lg py-2 px-6 shadow-md"
+            >
+              Cancel Order
+            </button>
           </div>
           {% endif %}
         </div>
@@ -249,5 +422,24 @@
     </div>
   </div>
 </div>
+
+<script>
+  document
+    .getElementById("start_preparation")
+    .addEventListener("click", function () {
+      const order_id = this.dataset.id;
+      console.log(order_id)
+      fetch(`/adminapp/start_prepration/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({ query: order_id }),
+      })
+        .then((response) => response.json())
+        .then((response) => {console.log("hi")});
+    });
+</script>
 
 {% endblock admindashboard %}

@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
+
+import json
 
 # Create your views here.
 @never_cache
@@ -94,3 +97,19 @@ def editCuisine(request,cuisine_id):
             return JsonResponse(data)
         except Cuisine.DoesNotExist:
             return JsonResponse({'error':'Cuisine not found'})
+
+@never_cache
+@login_required(login_url='/accounts/login')
+def start_prepration(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            cuisine_id = data.get('query')
+            order = OrderCreated.objects.get(id=cuisine_id)
+            order.is_started = True
+            order.started_at = timezone.now()
+            order.save()
+            return JsonResponse({'response':'success'})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)

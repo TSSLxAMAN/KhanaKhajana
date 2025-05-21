@@ -40,6 +40,24 @@ class UserProfile(models.Model):
     def __str__(self):
         return self.user.username
 
+class Driver(models.Model):
+    GENDER = [
+         ('MALE' , 'MALE'),
+         ('FEMALE' , 'FEMALE'),
+    ]
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='driver_profile', null=True, blank=True)
+    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False)
+    driver_email = models.CharField(max_length=64, null=True, blank=True)
+    username = models.CharField(max_length=16, blank=True, null=True)
+    role = models.CharField(max_length=16, default="driver", blank=True, null=True)
+    driver_name =  models.CharField(max_length=255)
+    mobile_number = models.IntegerField()
+    driver_image = models.ImageField(upload_to='images/driver_images/')
+    gender = models.CharField(choices=GENDER, max_length=7)
+    
+    def __str__(self):
+        return self.driver_name
+
 class OrderCreated(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
@@ -52,7 +70,7 @@ class OrderCreated(models.Model):
 
     delivery_address = models.TextField()
     phone_number = models.CharField(max_length=15)
-    delivered_by = models.CharField(max_length=100, blank=True, null=True)
+    delivered_by = models.ForeignKey(Driver, on_delete=models.CASCADE, related_name='delivery', null=True, blank=True)
 
     is_received = models.BooleanField(default=True)
     received_at = models.DateTimeField(auto_now_add=True)
@@ -86,19 +104,6 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.cuisine.cusine_name}"
-
-class Driver(models.Model):
-    GENDER = [
-         ('MALE' , 'MALE'),
-         ('FEMALE' , 'FEMALE'),
-    ]
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='driver_profile', null=True, blank=True)
-    id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 
-    username = models.CharField(max_length=16, blank=True, null=True)
-    driver_name =  models.CharField(max_length=255)
-    mobile_number = models.IntegerField()
-    driver_image = models.ImageField(upload_to='images/driver_images/')
-    gender = models.CharField(choices=GENDER, max_length=7)
 
 class Driver_Delivery(models.Model):
     id = models.UUIDField(primary_key = True, default = uuid.uuid4, editable = False) 

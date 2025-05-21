@@ -8,6 +8,7 @@ urlpatterns = [
     path('',include('home.urls')),
     path('accounts/', include('allauth.urls')),
     path('adminapp/',include('adminapp.urls')),
+    path('driver/',include('driver.urls')),
 ]
 
 if settings.DEBUG:

@@ -53,9 +53,13 @@ class DriverForm(forms.ModelForm):
 
     class Meta:
         model = Driver
-        fields = ['username', 'password', 'driver_name', 'gender', 'mobile_number', 'driver_image']
+        fields = ['username', 'password', 'driver_name', 'driver_email','gender', 'mobile_number', 'driver_image']
         widgets = {
             'driver_name': forms.TextInput(attrs={
+                'class': 'form-control rounded p-2 border border-gray-300',
+                'placeholder': 'Driver name'
+            }),
+            'driver_email': forms.TextInput(attrs={
                 'class': 'form-control rounded p-2 border border-gray-300',
                 'placeholder': 'Driver name'
             }),
@@ -74,9 +78,10 @@ class DriverForm(forms.ModelForm):
     def save(self, commit=True):
         username = self.cleaned_data['username']
         password = self.cleaned_data['password']
+        driver_email = self.cleaned_data['driver_email']
 
         # Create user
-        user = User.objects.create_user(username=username)
+        user = User.objects.create_user(username=username,email=driver_email)
         user.set_password(password)
         user.save()
 

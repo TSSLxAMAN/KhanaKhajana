@@ -105,8 +105,8 @@
                 </h4>
                 {% if order_created.is_cooking_completed %}
                 <p class="text-gray-600">
-                  {{ order_created.cooking_completed_at|date:"F j, Y" }} at {{
-                  order_created.cooking_completed_at|time:"g:i A" }}
+                  {{ order_created.cooking_completed_at|date:"F j, Y" }} at 
+                  {{ order_created.cooking_completed_at|time:"g:i A" }}
                 </p>
                 <p class="mt-1 text-gray-500">
                   Your food is ready for delivery.
@@ -132,12 +132,11 @@
                 </h4>
                 {% if order_created.is_out_for_delivery %}
                 <p class="text-gray-600">
-                  {{ order_created.out_for_delivery_at|date:"F j, Y" }} at {{
-                  order_created.out_for_delivery_at|time:"g:i A" }}
+                  {{ order_created.out_for_delivery_at|date:"F j, Y" }} at 
+                  {{ order_created.out_for_delivery_at|time:"g:i A" }}
                 </p>
                 <p class="mt-1 text-gray-500">
-                  Your food is on the way with {{
-                  order_created.delivered_by|default:"our delivery partner" }}.
+                  Your food is on the way with {{ order_created.delivered_by|default:"our delivery partner" }}.
                 </p>
                 {% else %}
                 <p class="text-gray-400">Pending</p>

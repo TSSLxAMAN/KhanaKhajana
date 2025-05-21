@@ -155,6 +155,7 @@
                 class="hidden sm:block absolute top-0 inset-x-0 h-1 bg-orange-100 rounded-full"
               >
                 <div
+                  id="progressBar"
                   class="absolute top-0 left-0 h-1 bg-orange-600 rounded-full transition-all duration-500"
                   style="width: 
                 {% if order.is_delivered %}100%
@@ -222,6 +223,7 @@
                 <!-- Step 2: Preparation Started -->
                 <div class="flex flex-col items-center relative">
                   <div
+                    id="preprationStarted"
                     class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_started %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
                   >
                     {% if order.is_started %}
@@ -241,17 +243,17 @@
                     </svg>
                     {% else %} 2 {% endif %}
                   </div>
-                  <div class="mt-4 text-center">
+                  <div class="mt-4 text-center" id="cookingStartedDiv">
                     <h4 class="font-semibold text-orange-800">
                       Preparation Started
                     </h4>
                     {% if order.started_at %}
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-gray-600" id="preprationStarted_date">
                       {{ order.started_at|date:"M d, Y • h:i A" }}
                     </p>
                     {% endif %}
                   </div>
-                  <div class="absolute top-32 left-0 w-full">
+                  <div class="absolute top-32 left-0 w-full" id="cookingBtnDiv">
                     {% if order.is_started and not order.is_cooking_completed %}
                     <input
                       type="hidden"
@@ -274,6 +276,7 @@
                 <div class="flex flex-col items-center relative">
                   <div
                     class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_cooking_completed %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
+                    id="completeCooking"
                   >
                     {% if order.is_cooking_completed %}
                     <svg
@@ -292,42 +295,44 @@
                     </svg>
                     {% else %} 3 {% endif %}
                   </div>
-                  <div class="mt-4 text-center">
+                  <div class="mt-4 text-center" id="cookingCompleted_date_div">
                     <h4 class="font-semibold text-orange-800">
                       Cooking Completed
                     </h4>
                     {% if order.cooking_completed_at %}
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-gray-600" id="cookingCompleted_date">
                       {{ order.cooking_completed_at|date:"M d, Y • h:i A" }}
                     </p>
                     {% endif %}
                   </div>
-                  <div class="absolute top-32 left-0 w-full">
+                  <div class="mt-4 w-full max-w-xs mx-auto bg-orange-50 rounded-xl p-4 shadow-inner">
+                    <p id="delivery_by" class="text-sm font-bold text-orange-800">
+                      {% if order.delivered_by %}  
+                        Delivery by </br> {{ order.delivered_by }}
+                      {% endif %}
+                    </p>
+                    <div id="cookingCompletedDiv"> 
                     {% if order.is_cooking_completed and not order.is_out_for_delivery %}
-
-                    <input
-                      type="hidden"
-                      name="status"
-                      value="out_for_delivery"
-                    />
-                    <div class="mb-2">
-                      <input
-                        type="text"
-                        name="delivery_person"
-                        placeholder="Delivery Person Name"
-                        class="w-full p-2 border border-orange-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
-                        required
-                      />
-                    </div>
-                    <button
-                      type="button"
-                      data-id="{{ order.id }}"
-                      id="out_for_delivery"
-                      class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
-                    >
-                      Send for Delivery
-                    </button>
+                      <input type="hidden" name="status" value="out_for_delivery" />
+                  
+                      <label for="driverSelect" class="block text-sm font-semibold text-orange-700 mb-2">Select Driver</label>
+                      <select id="driverSelect" class="w-full border border-orange-300 rounded-lg px-3 py-2 text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                        <option value="" disabled selected>Select Driver</option>
+                        {% for driver in drivers %}
+                          <option value="{{ driver.id }}">{{ driver.driver_name }}</option>
+                        {% endfor %}
+                      </select>
+                  
+                      <button
+                        type="button"
+                        data-id="{{ order.id }}"
+                        id="out_for_delivery"
+                        class="mt-4 w-full bg-orange-600 hover:bg-orange-700 transition-colors text-white font-semibold rounded-lg shadow-md px-1 py-2 cursor-pointer"
+                      >
+                        Send for Delivery
+                      </button>
                     {% endif %}
+                    </div>
                   </div>
                 </div>
 
@@ -335,6 +340,7 @@
                 <div class="flex flex-col items-center relative">
                   <div
                     class="w-12 h-12 rounded-full flex items-center justify-center {% if order.is_out_for_delivery %}bg-orange-600 text-white{% else %}bg-orange-100 text-orange-400{% endif %} border-4 border-white shadow-lg z-10"
+                    id="out_for_delivery_check"
                   >
                     {% if order.is_delivered %}
                     <svg
@@ -368,13 +374,13 @@
                     </svg>
                     {% else %} 4 {% endif %}
                   </div>
-                  <div class="mt-4 text-center">
+                  <div class="mt-4 text-center" id="out_for_delivery_at_date_div">
                     <h4 class="font-semibold text-orange-800">
                       {% if order.is_delivered %}Delivered{% else %}Out for
                       Delivery{% endif %}
                     </h4>
                     {% if order.out_for_delivery_at %}
-                    <p class="text-sm text-gray-600">
+                    <p class="text-sm text-gray-600" id="out_for_delivery_at_date">
                       {{ order.out_for_delivery_at|date:"M d, Y • h:i A" }}
                     </p>
                     {% endif %} {% if order.delivered_at %}
@@ -383,21 +389,12 @@
                     </p>
                     {% endif %}
                   </div>
-                  <div class="absolute top-32 left-0 w-full">
+                  <div class="mt-4 w-full max-w-xs mx-auto bg-orange-50 rounded-xl p-4 shadow-inner"    id="otpDiv">
                     {% if order.is_out_for_delivery and not order.is_delivered %}
-                    <p class="text-center text-gray-600 text-sm mb-2">
-                      OTP:
-                      <span class="font-bold">{{ order.delivery_otp }}</span>
+                    <p class=" text-orange-800 font-bold text-sm mb-0" >
+                      OTP: {{ order.delivery_otp }}
                     </p>
-                    <input type="hidden" name="status" value="delivered" />
-                    <button
-                      type="button"
-                      data-id="{{ order.id }}"
-                      id="select_driver"
-                      class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
-                    >
-                      Mark as Delivered
-                    </button>
+                    <p class="text-orange-800  font-bold text-sm">Waiting for otp</p>                    
                     {% endif %}
                   </div>
                 </div>
@@ -410,6 +407,7 @@
           <div class="flex justify-end mt-8">
             <input type="hidden" name="status" value="cancel" />
             <button
+              id = "cancel_order_btn"
               type="button"
               class="bg-red-600 hover:bg-red-700 transition-colors text-white rounded-lg py-2 px-6 shadow-md"
             >
@@ -428,7 +426,7 @@
     .getElementById("start_preparation")
     .addEventListener("click", function () {
       const order_id = this.dataset.id;
-      console.log(order_id)
+
       fetch(`/adminapp/start_prepration/`, {
         method: "POST",
         headers: {
@@ -438,8 +436,247 @@
         body: JSON.stringify({ query: order_id }),
       })
         .then((response) => response.json())
-        .then((response) => {console.log("hi")});
+        .then((data) => {
+          if (data.success) {
+            const formattedTime = data.started_at;
+            let prepDateP = document.getElementById("preprationStarted_date");
+            if (!prepDateP) {
+              const newP = document.createElement("p");
+              newP.id = "preprationStarted_date";
+              newP.className = "text-sm text-gray-600";
+              newP.innerText = formattedTime;
+          
+              const container = document.querySelector("#cookingStartedDiv");
+              container.appendChild(newP);
+            } else {
+              prepDateP.innerText = formattedTime;
+            }
+            const progressBar = document.querySelector(
+              "#progressBar"
+            );
+            progressBar.style.width = "25%";
+
+            const step2Circle = document.querySelector(
+              "#preprationStarted"
+            )
+            step2Circle.innerHTML = `
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>`;
+
+            step2Circle.classList.remove("bg-orange-100", "text-orange-400");
+            step2Circle.classList.add("bg-orange-600", "text-white");
+
+            document.getElementById("start_preparation").remove();
+            
+            const cookingBtnDiv = document.getElementById('cookingBtnDiv')
+            cookingBtnDiv.innerHTML = `
+            <input
+              type="hidden"
+              name="status"
+              value="complete_cooking"
+            />
+            <button
+              type="button"
+              data-id="{{ order.id }}"
+              id="complete_cooking"
+              class="bg-orange-600 hover:bg-orange-700 transition-colors text-white rounded-lg py-2 px-4 w-full shadow-md"
+            >
+              Complete Cooking
+            </button>
+            `
+            const completeCookingButtonWrapper =
+              document.querySelector("#complete_cooking")?.parentElement;
+            if (completeCookingButtonWrapper) {
+              completeCookingButtonWrapper.classList.remove("hidden");
+            }
+            cancel_btn = document.querySelector("#cancel_order_btn")
+            cancel_btn.remove()
+          }
+        });
     });
 </script>
 
+<script>
+  document.addEventListener("click", function (event) {
+    const button = event.target.closest("#complete_cooking");
+    if (!button) return;
+
+    const order_id = button.dataset.id;
+
+    fetch(`/adminapp/complete_cooking/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({ query: order_id }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+
+        if (data.success) {
+          const formattedTime = data.started_at;
+
+          let prepDateP = document.getElementById("cookingCompleted_date");
+          if (!prepDateP) {
+            const newP = document.createElement("p");
+            newP.id = "cookingCompleted_date";
+            newP.className = "text-sm text-gray-600";
+            newP.innerText = formattedTime;
+
+            const container = document.querySelector("#cookingCompleted_date_div");
+            container.appendChild(newP);
+          } else {
+            prepDateP.innerText = formattedTime;
+          }
+
+          // Update progress bar
+          const progressBar = document.querySelector("#progressBar");
+          progressBar.style.width = "50%";
+
+          // Update step circle
+          const step2Circle = document.querySelector("#completeCooking");
+          step2Circle.innerHTML = `
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>`;
+          step2Circle.classList.remove("bg-orange-100", "text-orange-400");
+          step2Circle.classList.add("bg-orange-600", "text-white");
+
+          // Remove button
+          button.remove();
+
+          // Generate options from driver list
+          let driverOptions = `<option value="" disabled selected>Select Driver</option>`;
+          data.driver_list.forEach(driver => {
+            driverOptions += `<option value="${driver.id}">${driver.name}</option>`;
+          });
+
+          // Add "Send for Delivery" UI
+          const cookingBtnDiv = document.getElementById('cookingCompletedDiv');
+          cookingBtnDiv.innerHTML = `
+            <input type="hidden" name="status" value="out_for_delivery" />
+              <label for="driverSelect" class="block text-sm font-semibold text-orange-700 mb-2">Select Driver</label>
+              <select id="driverSelect" class="w-full border border-orange-300 rounded-lg px-3 py-2 text-orange-800 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                ${driverOptions}
+              </select>
+              <button
+                type="button"
+                data-id="${order_id}"
+                id="out_for_delivery"
+                class="mt-4 w-full bg-orange-600 hover:bg-orange-700 transition-colors text-white font-semibold rounded-lg shadow-md px-4 py-2 cursor-pointer"
+              >
+                Send for Delivery
+              </button>
+          `;
+        }
+      });
+  });
+</script>
+
+<script>
+  document.addEventListener("click", function (event) {
+    const sendBtn = event.target.closest("#out_for_delivery");
+    if (!sendBtn) return;
+
+    const orderId = sendBtn.dataset.id;
+    const driverSelect = document.getElementById("driverSelect");
+    const selectedDriverId = driverSelect.value;
+
+    if (!selectedDriverId) {
+      alert("Please select a driver first.");
+      return;
+    }
+
+    fetch(`/adminapp/send_for_delivery/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": "{{ csrf_token }}",
+      },
+      body: JSON.stringify({
+        order_id: orderId,
+        driver_id: selectedDriverId,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          sendBtn.remove()
+
+          const progressBar = document.querySelector("#progressBar");
+          progressBar.style.width = "75%";
+
+          const delivery_by = document.getElementById("delivery_by")
+          delivery_by.innerText = `Delivery by \n ${data.driver.name}`
+          
+          const otpDivContainer = document.getElementById('otpDiv');
+
+          if (otpDivContainer) {
+            otpDivContainer.innerHTML = '';
+          
+            const otpParagraph = document.createElement('p');
+            otpParagraph.className = 'text-orange-800 font-bold text-sm mb-0';
+            otpParagraph.innerText = `OTP: ${data.order_otp} \n Waiting for OTP`;
+          
+            otpDivContainer.appendChild(otpParagraph);
+          }
+
+          const cookingBtnDiv = document.getElementById('cookingCompletedDiv');
+          cookingBtnDiv.remove()
+
+          let prepDateP = document.getElementById("out_for_delivery_at_date");
+          if (!prepDateP) {
+            const newP = document.createElement("p");
+            newP.id = "out_for_delivery_at_date";
+            newP.className = "text-sm text-gray-600";
+            newP.innerText = data.started_at;
+
+            const container = document.querySelector("#out_for_delivery_at_date_div");
+            container.appendChild(newP);
+          } else {
+            prepDateP.innerText = data.started_at;
+          } 
+
+          const step2Circle = document.querySelector("#out_for_delivery_check");
+          step2Circle.innerHTML = `
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              />
+            </svg>`;
+          step2Circle.classList.remove("bg-orange-100", "text-orange-400");
+          step2Circle.classList.add("bg-orange-600", "text-white");
+
+        } else {
+          alert("Failed to send for delivery.");
+        }
+      });
+  });
+</script>
+
+
 {% endblock admindashboard %}
+

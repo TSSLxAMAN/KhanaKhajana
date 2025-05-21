@@ -55,6 +55,9 @@ def dashboard(request):
     if request.user.username == 'admin':
         return redirect('adminDashboard')
     
+    if hasattr(request.user, 'driver_profile') and request.user.driver_profile.role == "driver":
+        return redirect('driverDashboard')
+
     if not request.user.has_usable_password():
         if request.method == 'POST':
             form = CustomSetPasswordForm(user=request.user, data=request.POST)

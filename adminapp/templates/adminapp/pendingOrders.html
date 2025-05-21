@@ -14,7 +14,16 @@
               {% for order in pendingOrders %}
                 <div class="bg-orange-50 rounded-xl shadow-sm overflow-hidden">
                   <div class="p-5">
-                    <div class="flex items-center justify-between">
+                    <span
+                      class="bg-orange-100 text-orange-800 px-4 py-1 rounded-full font-medium text-sm"
+                    >
+                      {% if order.is_delivered %}Delivered {% elif order.is_out_for_delivery %}
+                      Out for Delivery {% elif order.is_cooking_completed %}
+                      Cooking Completed {% elif order.is_started %}
+                      Preparation Started {% elif order.is_cancelled %}
+                      Cancelled {% else %}Order Received {% endif %}
+                    </span>
+                    <div class="flex items-center justify-between mt-2">
                       <!-- Left: Order ID and Date -->
                       <div class="flex items-center space-x-4">
                         <div class="bg-orange-500 text-white p-3 rounded-lg">

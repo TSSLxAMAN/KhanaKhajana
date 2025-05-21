@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect
+from django.shortcuts import get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.cache import never_cache
+from django.utils import timezone
+from django.utils.timezone import localtime
 from .forms import Cuisine_Form, DriverForm
 from .models import *
-from django.http import JsonResponse
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.cache import never_cache
-from django.shortcuts import get_object_or_404
-from django.utils import timezone
 
 import json
 
@@ -45,7 +46,8 @@ def ordersCompleted(request):
 def pendingOrders(request, order_id=None):
     if order_id:
         pendingOrder = OrderCreated.objects.get(id=order_id)
-        return render(request, 'adminapp/particular_pendingOrder.html', {'order': pendingOrder})
+        drivers = Driver.objects.all()
+        return render(request, 'adminapp/particular_pendingOrder.html', {'order': pendingOrder, 'drivers':drivers})
     else:
         pendingOrders = OrderCreated.objects.filter(is_delivered=False).order_by('-order_date')
         return render(request, 'adminapp/pendingOrders.html', {'pendingOrders':pendingOrders})
@@ -146,7 +148,52 @@ def start_prepration(request):
             order.is_started = True
             order.started_at = timezone.now()
             order.save()
-            return JsonResponse({'response':'success'})
+            formatted_time = localtime(order.started_at).strftime('%b %d, %Y • %I:%M %p')
+            print(formatted_time)
+            return JsonResponse({'success': True,'started_at': formatted_time})
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=400)
+            return JsonResponse({'success': False,'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@never_cache
+@login_required(login_url='/accounts/login')
+def complete_cooking(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            cuisine_id = data.get('query')
+            order = OrderCreated.objects.get(id=cuisine_id)
+            order.is_cooking_completed = True
+            order.cooking_completed_at = timezone.now()
+            order.save()
+            formatted_time = localtime(order.started_at).strftime('%b %d, %Y • %I:%M %p')
+            print(formatted_time)
+            drivers = Driver.objects.all()
+            driver_list = [{'id': driver.id, 'name': driver.username} for driver in drivers]
+            print(driver_list)
+            return JsonResponse({'success': True,'started_at': formatted_time,'driver_list':driver_list})
+        except Exception as e:
+            return JsonResponse({'success': False,'error': str(e)}, status=400)
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@never_cache
+@login_required(login_url='/accounts/login')
+def send_for_delivery(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            order_id = data.get("order_id")
+            driver_id = data.get("driver_id")
+            order = OrderCreated.objects.get(id=order_id)
+            order.is_out_for_delivery = True
+            order.out_for_delivery_at = timezone.now()
+            driver = Driver.objects.get(id=driver_id)
+            order_otp = order.delivery_otp
+            print(order_otp)
+            order.delivered_by = driver
+            order.save()
+            formatted_time = localtime(order.started_at).strftime('%b %d, %Y • %I:%M %p')
+            return JsonResponse({'success': True,'started_at': formatted_time, 'driver': {'name' : driver.driver_name}, 'order_otp':order_otp})
+        except Exception as e:
+            return JsonResponse({'success': False,'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)

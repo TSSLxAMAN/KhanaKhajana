@@ -14,4 +14,6 @@ urlpatterns = [
     path('editCuisine/<uuid:cuisine_id>/', editCuisine, name='editCuisine'),
     path('editDriver/<uuid:driver_id>/', editDriver, name='editDriver'),
     path('start_prepration/', start_prepration, name='start_prepration'),
+    path('complete_cooking/', complete_cooking, name='complete_cooking'),
+    path('send_for_delivery/', send_for_delivery, name='send_for_delivery'),
 ]

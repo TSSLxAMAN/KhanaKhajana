@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block maincontent %}
+{% extends "base.html" %} {% block maincontent %} 
 {% load socialaccount %}
 <div
   class="flex min-h-screen items-center justify-center py-12 px-4 sm:px-6 lg:px-8"
@@ -37,9 +37,7 @@
                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 placeholder="your@email.com"
               />
-                <p class="tetx-sm text-red-500">
-                  {{ form.email.errors }}
-                </p>
+              <p class="tetx-sm text-red-500">{{ form.email.errors }}</p>
             </div>
           </div>
 
@@ -60,9 +58,7 @@
                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 placeholder="••••••••"
               />
-                <p class="tetx-sm text-red-500">
-                  {{ form.password1.errors }}
-                </p>
+              <p class="tetx-sm text-red-500">{{ form.password1.errors }}</p>
             </div>
           </div>
 
@@ -83,9 +79,7 @@
                 class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-orange-500 focus:border-orange-500 sm:text-sm"
                 placeholder="••••••••"
               />
-                <p class="tetx-sm text-red-500">
-                  {{ form.password2.errors }}
-                </p>
+              <p class="tetx-sm text-red-500">{{ form.password2.errors }}</p>
             </div>
           </div>
 

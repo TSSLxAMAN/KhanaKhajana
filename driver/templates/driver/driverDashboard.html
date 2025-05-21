@@ -2,9 +2,87 @@
 <div class="grid grid-cols-12 bg-orange-50 min-h-screen">
   <!-- Main Content -->
   <div class="col-span-12 max-h-screen overflow-auto w-full">
+    <!-- Top Header -->
+    <div class="bg-white shadow-sm p-4 flex items-center justify-between sticky top-0 z-10">
+      <div class="flex items-center space-x-4">
+        <img 
+        src = {{ request.user.driver_profile.driver_image.url }}
+        alt="Profile Photo"
+        class="w-10 h-10 rounded-full object-cover"
+        >
+        <span class="text-md font-bold text-orange-700">{{ request.user }}</span>
+      </div>
+    </div>
+
     <div class="px-6 py-8">
-      <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm"></div>
+      <div class="max-w-6xl mx-auto">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-500">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Today's Deliveries</p>
+                <h3 class="text-2xl font-bold text-gray-800">12</h3>
+              </div>
+              <div class="bg-orange-100 p-3 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-600">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Earnings</p>
+                <h3 class="text-2xl font-bold text-gray-800">₹2,458</h3>
+              </div>
+              <div class="bg-orange-100 p-3 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-orange-700">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-sm font-medium text-gray-500">Rating</p>
+                <div class="flex items-center">
+                  <h3 class="text-2xl font-bold text-gray-800">4.8</h3>
+                  <div class="flex ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div class="bg-orange-100 p-3 rounded-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-orange-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>    
+      </div>
+    </div>
+
+    <div class="grid grid-cols-12 bg-orange-50 min-h-screen">
+      <!-- Main Content -->
+      <div class="col-span-12 max-h-screen overflow-auto w-full">
+        <div class="px-6 py-0">
+          <div class="max-w-4xl mx-auto">
+            <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm">
+              <h2 class="text-orange-700 font-bold text-2xl">Notices</h2>
+              <div class="text-orange-700 font-medium flex justify-center items-center h-64">
+                No notices
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

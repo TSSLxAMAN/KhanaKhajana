@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 from django.utils.timezone import localtime
+from django.core.mail import send_mail
+from django.conf import settings
+
 from .forms import Cuisine_Form, DriverForm
 from .models import *
 
@@ -189,11 +192,31 @@ def send_for_delivery(request):
             order.out_for_delivery_at = timezone.now()
             driver = Driver.objects.get(id=driver_id)
             order_otp = order.delivery_otp
-            print(order_otp)
             order.delivered_by = driver
             order.save()
             formatted_time = localtime(order.started_at).strftime('%b %d, %Y • %I:%M %p')
+
+            driver_email = driver.driver_email
+
+            subject = f"New Delivery Assigned - Order #{order_id}"
+            message = f"""
+                Hi {driver.driver_name},
+
+                You have been assigned a new delivery.
+
+                Order ID: {order_id}
+
+                Please check your dashboard for more details.
+
+                Regards,
+                Delivery Management Team
+            """
+            send_mail(subject, message, from_email='ramdomlassi@gmail.com',recipient_list=[driver_email])
+
+
             return JsonResponse({'success': True,'started_at': formatted_time, 'driver': {'name' : driver.driver_name}, 'order_otp':order_otp})
         except Exception as e:
-            return JsonResponse({'success': False,'error': str(e)}, status=400)
+            print("SEND MAIL ERROR:", str(e))
+            return JsonResponse({'success': False, 'error': str(e)}, status=400)
+        
     return JsonResponse({'error': 'Invalid request'}, status=400)

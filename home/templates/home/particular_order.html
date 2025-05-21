@@ -22,11 +22,11 @@
             <span
               class="px-4 py-2 rounded-full text-sm font-semibold {% if order_created.is_delivered %} bg-green-100 text-green-800 {% elif order_created.is_cancelled %} bg-red-100 text-red-800 {% else %} bg-blue-100 text-blue-800 {% endif %}"
             >
-              {% if order_created.is_delivered %} Delivered {% elif
-              order_created.is_cancelled %} Cancelled {% elif
-              order_created.is_out_for_delivery %} Out for Delivery {% elif
-              order_created.is_cooking_completed %} Ready for Delivery {% elif
-              order_created.is_started %} Cooking {% else %} Order Received {% endif %}
+              {% if order_created.is_delivered %} Delivered 
+              {% elif order_created.is_cancelled %} Cancelled 
+              {% elif order_created.is_out_for_delivery %} Out for Delivery 
+              {% elif order_created.is_cooking_completed %} Ready for Delivery 
+              {% elif order_created.is_started %} Cooking {% else %} Order Received {% endif %}
             </span>
           </div>
           <p class="text-gray-600">
@@ -157,8 +157,8 @@
                 <h4 class="text-lg font-bold text-gray-900">Delivered</h4>
                 {% if order_created.is_delivered %}
                 <p class="text-gray-600">
-                  {{ order_created.delivered_at|date:"F j, Y" }} at {{
-                  order_created.delivered_at|time:"g:i A" }}
+                  {{ order_created.delivered_at|date:"F j, Y" }} at 
+                  {{ order_created.delivered_at|time:"g:i A" }}
                 </p>
                 <p class="mt-1 text-gray-500">
                   Your order has been delivered successfully.

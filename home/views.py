@@ -376,3 +376,4 @@ def create_cod_order(request):
             return JsonResponse({"success": False, "error": "No active cart found."})
 
     return JsonResponse({"success": False, "error": "Invalid request method."})
+

@@ -6,6 +6,7 @@ from django.http import JsonResponse
 from django.contrib import messages
 from django.conf import settings
 from django.shortcuts import get_object_or_404
+from django.db.models import Sum, Avg
 
 from .utils import send_otp_via_sms
 
@@ -37,17 +38,38 @@ def contact(request):
     return render(request, 'home/contact.html')
 
 def myprofile(request):
-    return render(request, 'home/myprofile.html')
+    user_profile = UserProfile.objects.get(user=request.user)
+    return render(request, 'home/myprofile.html', {'user_profile':user_profile})
 
 @login_required(login_url='/accounts/login')
 def myorders(request, order_id=None):
     if order_id:
-        order_created = get_object_or_404(OrderCreated, id=order_id, user=request.user)
+        order_created = get_object_or_404(OrderCreated, id=order_id, user=request.user, is_cancelled=False)
         return render(request, 'home/particular_order.html', {'order_created': order_created})
     else:
-        all_orders = OrderCreated.objects.filter(user=request.user).order_by('-order_date')
+        all_orders = OrderCreated.objects.filter(user=request.user,is_cancelled=False).order_by('-order_date')
         return render(request, 'home/myorders.html', {'orders': all_orders})
 
+@login_required(login_url='/accounts/login')
+def cancel_order_by_user(request):
+    try:
+        order_id = request.POST.get('order_id')
+        print('xx',order_id)
+        order = OrderCreated.objects.get(id=order_id)
+        print(order.is_started)
+        print(order.is_cancelled)
+        if order.is_started == True:
+            print("hi")
+            return redirect('myorders', order_id=order_id)
+        else:
+            print("no")
+            order.is_cancelled = True
+            order.save()
+            return redirect('myorders', order_id=order_id)
+
+    except Exception as e:
+        return redirect('myorders')
+       
 
 @never_cache
 @login_required(login_url='/accounts/login')
@@ -89,11 +111,26 @@ def dashboard(request):
             messages.success(request, "Mobile number set successfully!", extra_tags='mobile')
             return redirect('dashboard')
     
+    user = request.user
+    
+    total_orders = OrderCreated.objects.filter(user=user, is_paid=True, is_delivered=True).count()
+    total_spent = OrderCreated.objects.filter(user=user, is_paid=True, is_delivered=True).aggregate(
+            total=Sum('total_amount')
+        )['total'] or 0    
+    delivered_orders = OrderCreated.objects.filter(user=user, is_paid=True, is_delivered=True).count()
+    avg_order_value = OrderCreated.objects.filter(user=user, is_paid=True, is_delivered=True).aggregate(
+        avg=Avg('total_amount')
+    )['avg'] or 0
+
     return render(request, 'home/dashboard.html', {
         'form': form, 
         'address_form': address_form,
         'mobile_form': mobile_form,
-        'user_profile': user_profile
+        'user_profile': user_profile,
+        'total_orders': total_orders,
+        'total_spent': total_spent,
+        'delivered_orders': delivered_orders,
+        'avg_order_value': avg_order_value,
     })
 
 

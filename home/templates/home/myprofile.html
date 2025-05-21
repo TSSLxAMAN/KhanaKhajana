@@ -4,12 +4,341 @@
   <div class="col-span-12 max-h-screen overflow-auto w-full">
     <div class="px-6 py-8">
       <div class="max-w-4xl mx-auto">
-        <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm">
-           <h2 class="text-2xl font-bold mb-4 text-orange-800">Profile</h2>
+        
+        <!-- Header Section -->
+        <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-3xl p-8 mb-6 text-white shadow-lg">
+          <div class="flex items-center space-x-6">
+            <div class="bg-white bg-opacity-20 rounded-full">
+              {% for account in user.socialaccount_set.all %}
+                {% if account.provider == "google" %}
+                <img
+                  src="{{ account.extra_data.picture }}"
+                  alt="Profile Photo"
+                  class="w-32 h-32 rounded-full"
+                />
+                {% endif %}
+              {% endfor %}
+            </div>
+            <div>
+              <h1 class="text-3xl font-bold">{{ user.get_full_name|default:user.username }}</h1>
+              <p class="text-orange-100 mt-1">{{ user.username }}</p>
+              <p class="text-orange-100 text-sm mt-2">Member since {{ user.date_joined|date:"F Y" }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Information -->
+        <div class="bg-white rounded-3xl shadow-sm mb-6">
+          <div class="p-8">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-2xl font-bold text-orange-800">Profile Information</h2>
+              <button id="edit-profile-btn" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                <span>Edit Profile</span>
+              </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <!-- Personal Information -->
+              <div class="space-y-6">
+                <div>
+                  <label class="block text-sm font-semibold text-orange-700 mb-2">Username</label>
+                  <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <span class="text-gray-600">{{ user.username }}</span>
+                    <span class="text-xs text-gray-500 block mt-1">Username cannot be changed</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-semibold text-orange-700 mb-2">Email Address</label>
+                  <div class="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <span class="text-gray-600">{{ user.email }}</span>
+                    <span class="text-xs text-gray-500 block mt-1">Email cannot be changed here</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-semibold text-orange-700 mb-2">Mobile Number</label>
+                  <div class="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                    <span class="text-gray-800" id="mobile-display">{{ user_profile.mobile_number|default:"Not set" }}</span>
+                    <input type="tel" id="mobile-input" name="mobile_number" value="{{ user_profile.mobile_number }}" pattern="[0-9]{10}" class="hidden w-full bg-transparent border-none focus:outline-none text-gray-800">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact Information -->
+              <div class="space-y-6">
+
+                <div>
+                  <label class="block text-sm font-semibold text-orange-700 mb-2">Address</label>
+                  <div class="bg-orange-50 border border-orange-200 rounded-lg p-3 min-h-24">
+                    <span class="text-gray-800" id="address-display">{{ user_profile.address|default:"Not set" }}</span>
+                    <textarea id="address-input" name="address" rows="3" class="hidden w-full bg-transparent border-none focus:outline-none text-gray-800 resize-none">{{ user_profile.address }}</textarea>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Action Buttons (Hidden by default) -->
+            <div id="profile-actions" class="hidden mt-6 flex space-x-4">
+              <button id="save-profile-btn" class="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                </svg>
+                <span>Save Changes</span>
+              </button>
+              <button id="cancel-edit-btn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                <span>Cancel</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Section -->
+        <div class="bg-white rounded-3xl shadow-sm mb-6">
+          <div class="p-8">
+            <h2 class="text-2xl font-bold text-orange-800 mb-6">Security Settings</h2>
+            
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 border border-orange-200 rounded-lg">
+                <div>
+                  <h3 class="font-semibold text-gray-800">Password</h3>
+                  <p class="text-sm text-gray-600">Last changed: {{ user.date_joined|date:"M j, Y" }}</p>
+                </div>
+                <a href="{% url 'account_change_password' %}" class="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center space-x-2">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m0 0a2 2 0 012 2m-2-2a2 2 0 00-2 2m0 0a2 2 0 01-2 2m2-2H9m6 0V9a2 2 0 00-2-2M9 7v6a2 2 0 002 2h2"/>
+                  </svg>
+                  <span>Change Password</span>
+                </a>
+              </div>
+
+              <div class="flex items-center justify-between p-4 border border-orange-200 rounded-lg">
+                <div>
+                  <h3 class="font-semibold text-gray-800">Two-Factor Authentication</h3>
+                  <p class="text-sm text-gray-600">Add an extra layer of security to your account</p>
+                </div>
+                <button class="bg-gray-400 text-white px-4 py-2 rounded-lg cursor-not-allowed" disabled>
+                  <span>Coming Soon</span>
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Success/Error Messages -->
+<div id="message-container" class="fixed top-4 right-4 z-50"></div>
+
+<script>
+let isEditing = false;
+let originalValues = {};
+
+// Edit Profile Functionality
+document.getElementById('edit-profile-btn').addEventListener('click', function() {
+  if (!isEditing) {
+    enterEditMode();
+  }
+});
+
+document.getElementById('save-profile-btn').addEventListener('click', function() {
+  saveProfile();
+});
+
+document.getElementById('cancel-edit-btn').addEventListener('click', function() {
+  cancelEdit();
+});
+
+function enterEditMode() {
+  isEditing = true;
+  
+  // Store original values
+  originalValues = {
+    first_name: document.getElementById('first-name-input').value,
+    last_name: document.getElementById('last-name-input').value,
+    mobile_number: document.getElementById('mobile-input').value,
+    address: document.getElementById('address-input').value
+  };
+  
+  // Hide display spans and show input fields
+  document.getElementById('first-name-display').classList.add('hidden');
+  document.getElementById('first-name-input').classList.remove('hidden');
+  
+  document.getElementById('last-name-display').classList.add('hidden');
+  document.getElementById('last-name-input').classList.remove('hidden');
+  
+  document.getElementById('mobile-display').classList.add('hidden');
+  document.getElementById('mobile-input').classList.remove('hidden');
+  
+  document.getElementById('address-display').classList.add('hidden');
+  document.getElementById('address-input').classList.remove('hidden');
+  
+  // Show action buttons and change edit button
+  document.getElementById('profile-actions').classList.remove('hidden');
+  document.getElementById('edit-profile-btn').innerHTML = '<span class="text-gray-500">Editing...</span>';
+  document.getElementById('edit-profile-btn').disabled = true;
+  
+  // Focus on first input
+  document.getElementById('first-name-input').focus();
+}
+
+function cancelEdit() {
+  isEditing = false;
+  
+  // Restore original values
+  document.getElementById('first-name-input').value = originalValues.first_name;
+  document.getElementById('last-name-input').value = originalValues.last_name;
+  document.getElementById('mobile-input').value = originalValues.mobile_number;
+  document.getElementById('address-input').value = originalValues.address;
+  
+  exitEditMode();
+}
+
+function exitEditMode() {
+  // Update display values
+  document.getElementById('first-name-display').textContent = document.getElementById('first-name-input').value || 'Not set';
+  document.getElementById('last-name-display').textContent = document.getElementById('last-name-input').value || 'Not set';
+  document.getElementById('mobile-display').textContent = document.getElementById('mobile-input').value || 'Not set';
+  document.getElementById('address-display').textContent = document.getElementById('address-input').value || 'Not set';
+  
+  // Show display spans and hide input fields
+  document.getElementById('first-name-display').classList.remove('hidden');
+  document.getElementById('first-name-input').classList.add('hidden');
+  
+  document.getElementById('last-name-display').classList.remove('hidden');
+  document.getElementById('last-name-input').classList.add('hidden');
+  
+  document.getElementById('mobile-display').classList.remove('hidden');
+  document.getElementById('mobile-input').classList.add('hidden');
+  
+  document.getElementById('address-display').classList.remove('hidden');
+  document.getElementById('address-input').classList.add('hidden');
+  
+  // Hide action buttons and restore edit button
+  document.getElementById('profile-actions').classList.add('hidden');
+  document.getElementById('edit-profile-btn').innerHTML = `
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+    </svg>
+    <span>Edit Profile</span>
+  `;
+  document.getElementById('edit-profile-btn').disabled = false;
+  
+  isEditing = false;
+}
+
+function saveProfile() {
+  // Validate mobile number
+  const mobileNumber = document.getElementById('mobile-input').value;
+  if (mobileNumber && !/^\d{10}$/.test(mobileNumber)) {
+    showMessage('Please enter a valid 10-digit mobile number', 'error');
+    return;
+  }
+  
+  // Prepare data for submission
+  const formData = new FormData();
+  formData.append('first_name', document.getElementById('first-name-input').value);
+  formData.append('last_name', document.getElementById('last-name-input').value);
+  formData.append('mobile_number', document.getElementById('mobile-input').value);
+  formData.append('address', document.getElementById('address-input').value);
+  formData.append('csrfmiddlewaretoken', document.querySelector('[name=csrfmiddlewaretoken]').value);
+  
+  // Show loading state
+  document.getElementById('save-profile-btn').innerHTML = `
+    <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+    </svg>
+    <span>Saving...</span>
+  `;
+  
+  // Submit via AJAX
+  fetch(window.location.href, {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest',
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      showMessage('Profile updated successfully!', 'success');
+      exitEditMode();
+    } else {
+      showMessage(data.message || 'Error updating profile', 'error');
+    }
+  })
+  .catch(error => {
+    showMessage('Error updating profile', 'error');
+    console.error('Error:', error);
+  })
+  .finally(() => {
+    // Restore save button
+    document.getElementById('save-profile-btn').innerHTML = `
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+      </svg>
+      <span>Save Changes</span>
+    `;
+  });
+}
+
+function showMessage(message, type) {
+  const messageContainer = document.getElementById('message-container');
+  const messageDiv = document.createElement('div');
+  
+  const bgColor = type === 'success' ? 'bg-green-100 text-green-800 border-green-200' : 'bg-red-100 text-red-800 border-red-200';
+  
+  messageDiv.className = `${bgColor} border px-4 py-3 rounded-lg mb-2 shadow-lg animate-pulse`;
+  messageDiv.textContent = message;
+  
+  messageContainer.appendChild(messageDiv);
+  
+  // Remove message after 5 seconds
+  setTimeout(() => {
+    messageDiv.remove();
+  }, 5000);
+}
+
+// Add CSRF token to all AJAX requests
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// Add mobile number validation
+document.getElementById('mobile-input').addEventListener('input', function() {
+  const value = this.value;
+  if (value && !/^\d*$/.test(value)) {
+    this.value = value.replace(/\D/g, '');
+  }
+  if (value.length > 10) {
+    this.value = value.slice(0, 10);
+  }
+});
+</script>
+
+<!-- Add CSRF Token -->
+{% csrf_token %}
 
 {% endblock userDashboard %}

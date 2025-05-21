@@ -8,6 +8,13 @@ from django.utils import timezone
 from django.utils.timezone import localtime
 from django.core.mail import send_mail
 from django.conf import settings
+from django.template.loader import get_template
+from django.http import HttpResponse
+from django.db.models import Sum, Avg, Count
+from django.db.models.functions import TruncDate
+from django.utils.timezone import now
+from xhtml2pdf import pisa
+
 
 from .forms import Cuisine_Form, DriverForm
 from .models import *
@@ -41,8 +48,9 @@ def adminDashboard(request):
 
 @never_cache
 @login_required(login_url='/accounts/login')
-def ordersCompleted(request):
-    return render(request, 'adminapp/ordersCompleted.html')
+def ordersCompleted(request,order_id=None):
+    completed_orders = OrderCreated.objects.filter(is_delivered=True).order_by('-delivered_at')
+    return render(request, 'adminapp/ordersCompleted.html', {'completed_orders':completed_orders})
 
 @never_cache
 @login_required(login_url='/accounts/login')
@@ -52,13 +60,22 @@ def pendingOrders(request, order_id=None):
         drivers = Driver.objects.all()
         return render(request, 'adminapp/particular_pendingOrder.html', {'order': pendingOrder, 'drivers':drivers})
     else:
-        pendingOrders = OrderCreated.objects.filter(is_delivered=False).order_by('-order_date')
+        pendingOrders = OrderCreated.objects.filter(is_delivered=False, is_cancelled=False).order_by('-order_date')
         return render(request, 'adminapp/pendingOrders.html', {'pendingOrders':pendingOrders})
 
 @never_cache
 @login_required(login_url='/accounts/login')
 def cancelledOrders(request):
-    return render(request, 'adminapp/cancelledOrders.html')
+    cancelled_order = OrderCreated.objects.filter(is_cancelled=True).order_by('-delivered_at')
+    return render(request, 'adminapp/cancelledOrders.html',{'cancelled_order':cancelled_order})
+
+@never_cache
+@login_required(login_url='/accounts/login')
+def cancel_order(request,order_id):
+    order = OrderCreated.objects.get(id=order_id)
+    order.is_cancelled = True
+    order.save()
+    return redirect('pendingOrders')
 
 @never_cache
 @login_required(login_url='/accounts/login')
@@ -72,11 +89,6 @@ def addCusine(request):
     else:
         form = Cuisine_Form()
     return render(request, 'adminapp/addCusine.html', {'form': form})
-
-@never_cache
-@login_required(login_url='/accounts/login')
-def userReview(request):
-    return render(request, 'adminapp/userReview.html')
 
 @never_cache
 @login_required(login_url='/accounts/login')
@@ -96,7 +108,62 @@ def addDriver(request):
 @never_cache
 @login_required(login_url='/accounts/login')
 def revenue(request):
-    return render(request, 'adminapp/revenue.html')
+    today = now().date()
+    month = today.month
+    year = today.year
+
+    # Total Revenue
+    total_revenue = OrderCreated.objects.filter(is_paid=True).aggregate(
+        total=Sum('total_amount'))['total'] or 0
+
+    # Revenue Today
+    revenue_today = OrderCreated.objects.filter(is_paid=True, order_date__date=today).aggregate(
+        total=Sum('total_amount'))['total'] or 0
+
+    # Revenue This Month
+    revenue_month = OrderCreated.objects.filter(is_paid=True, order_date__year=year, order_date__month=month).aggregate(
+        total=Sum('total_amount'))['total'] or 0
+
+    # Total Orders
+    total_orders = OrderCreated.objects.filter(is_paid=True).count()
+
+    # Average Order Value
+    avg_order_value = OrderCreated.objects.filter(is_paid=True).aggregate(
+        avg=Avg('total_amount'))['avg'] or 0
+
+    # Cancelled Orders
+    cancelled_orders = OrderCreated.objects.filter(is_cancelled=True).count()
+
+    # Completed Orders
+    completed_orders = OrderCreated.objects.filter(is_paid=True, is_delivered=True).count()
+
+    # Top Selling Items
+    top_items = OrderItem.objects.values(
+        'cuisine__cusine_name'
+    ).annotate(
+        total_sold=Sum('quantity')
+    ).order_by('-total_sold')[:5]
+
+    # Daily Revenue for Chart
+    daily_revenue = OrderCreated.objects.filter(is_paid=True).annotate(
+        date=TruncDate('order_date')
+    ).values('date').annotate(
+        total=Sum('total_amount')
+    ).order_by('date')
+
+    context = {
+        'total_revenue': total_revenue,
+        'revenue_today': revenue_today,
+        'revenue_month': revenue_month,
+        'total_orders': total_orders,
+        'avg_order_value': avg_order_value,
+        'cancelled_orders': cancelled_orders,
+        'completed_orders': completed_orders,
+        'top_items': top_items,
+        'daily_revenue': daily_revenue,
+    }
+
+    return render(request, 'adminapp/revenue.html', context)
 
 @never_cache
 @login_required(login_url='/accounts/login')
@@ -220,3 +287,22 @@ def send_for_delivery(request):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
         
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def generate_receipt_pdf(request, order_id):
+    order = get_object_or_404(OrderCreated, id=order_id)
+    items = OrderItem.objects.filter(order=order)
+
+    template_path = 'receipt.html'
+    context = {'order': order, 'items': items}
+
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'filename="receipt_{order.id}.pdf"'
+
+    template = get_template(template_path)
+    html = template.render(context)
+
+    pisa_status = pisa.CreatePDF(html, dest=response)
+
+    if pisa_status.err:
+        return HttpResponse('Error generating PDF receipt', status=500)
+    return response

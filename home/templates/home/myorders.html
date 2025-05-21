@@ -74,6 +74,8 @@
                     <div class="mt-4 pt-2 border-t border-orange-200">
                       {% if order.is_delivered %}
                       <p class="text-sm text-green-400">Order Delivered</p>
+                      {% elif order.is_cancelled %}
+                      <p class="text-sm text-red-400">Order Cancelled</p>
                       {% else %}
                       <p class="text-sm text-orange-400">On your way</p>
                       {% endif %}

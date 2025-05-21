@@ -10,6 +10,7 @@ urlpatterns = [
     path('myprofile/', myprofile, name='myprofile'), 
     path('myorders/', myorders, name='myorders'), 
     path('myorders/<uuid:order_id>', myorders, name='myorders_detail'), 
+    path('cancel_order_by_user/', cancel_order_by_user, name='cancel_order_by_user'), 
     path('mycart/', mycart, name='mycart'), 
     path('addToCart/', addToCart, name='addToCart'), 
     path('removeItem/', removeItem, name='removeItem'),

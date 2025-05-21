@@ -1,17 +1,240 @@
-{% extends "adminapp/adminBase.html" %} {% block admindashboard %} {% load static %}
+{% extends "adminapp/adminBase.html" %} 
+{% block admindashboard %} 
+{% load static %}
 
 <div class="grid grid-cols-12 bg-orange-50 min-h-screen">
   <div class="col-span-12 max-h-screen overflow-auto w-full">
     <div class="px-6 py-8">
-      <div class="max-w-4xl mx-auto">
+      <div class="max-w-7xl mx-auto">
         <div class="bg-white rounded-3xl p-8 mb-5 shadow-sm">
-           <h2 class="text-2xl font-bold mb-4 text-orange-800">Orders Completed</h2>
+          <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-orange-800">Completed Orders</h2>
+            <div class="text-sm text-orange-600 font-medium">
+              Total: {{ completed_orders.count }} orders
+            </div>
+          </div>
 
-           
+          <!-- Search and filter options -->
+          <div class="mb-6 flex flex-col md:flex-row gap-4">
+            <div class="relative flex-1">
+              <input type="text" id="order-search" placeholder="Search orders..." 
+                class="w-full py-2 px-4 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 absolute right-3 top-2.5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="flex gap-3">
+              <select id="date-filter" class="py-2 px-4 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <option value="all">All time</option>
+                <option value="today">Today</option>
+                <option value="week">This week</option>
+                <option value="month">This month</option>
+              </select>
+              <select id="sort-by" class="py-2 px-4 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-500">
+                <option value="recent">Most recent</option>
+                <option value="oldest">Oldest first</option>
+                <option value="highest">Highest amount</option>
+                <option value="lowest">Lowest amount</option>
+              </select>
+            </div>
+          </div>
+
+          {% if completed_orders %}
+          <div class="overflow-x-auto">
+            <div class="grid gap-6">
+              {% for order in completed_orders %}
+              <div class="order-card bg-orange-50 rounded-xl p-5 transition-transform transform hover:scale-[1.01] border border-orange-100">
+                <div class="flex flex-col md:flex-row justify-between gap-4">
+                  <!-- Order Info -->
+                  <div class="flex-1">
+                    <div class="flex items-start justify-between">
+                      <div>
+                        <h3 class="text-lg font-bold text-orange-800 flex items-center gap-2">
+                          Order #{{ order.id|truncatechars:8 }}
+                          <span class="text-xs bg-orange-100 text-orange-700 py-1 px-2 rounded-full">Completed</span>
+                        </h3>
+                        <p class="text-sm text-gray-600 mt-1">{{ order.user.first_name }} {{ order.user.last_name }}</p>
+                      </div>
+                      <div class="text-right">
+                        <p class="font-bold text-orange-700">₹{{ order.total_amount }}</p>
+                        <p class="text-xs text-gray-500">Payment ID: {{ order.payment_id|default:"N/A" }}</p>
+                      </div>
+                    </div>
+
+                    <!-- Order Items -->
+                    <div class="mt-4">
+                      <h4 class="text-sm font-semibold text-orange-600 mb-2">Order Items</h4>
+                      <div class="space-y-2">
+                        {% for item in order.orderitem_set.all %}
+                        <div class="flex justify-between items-center">
+                          <div class="flex items-center">
+                            <span class="w-6 h-6 bg-orange-200 text-orange-800 rounded-full flex items-center justify-center mr-2 text-xs">{{ item.quantity }}</span>
+                            <span class="text-gray-700">{{ item.cuisine.cusine_name }}</span>
+                          </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-sm text-gray-500 italic">No items available</p>
+                        {% endfor %}
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Delivery Info -->
+                  <div class="bg-white p-4 rounded-lg border border-orange-100 min-w-[280px]">
+                    <h4 class="text-sm font-semibold text-orange-700 mb-2">Delivery Details</h4>
+                    <div class="space-y-2 text-sm">
+                      <div>
+                        <span class="font-medium text-gray-700">Address:</span>
+                        <p class="text-gray-600">{{ order.delivery_address }}</p>
+                      </div>
+                      <div>
+                        <span class="font-medium text-gray-700">Phone:</span>
+                        <span class="text-gray-600">{{ order.phone_number }}</span>
+                      </div>
+                      <div>
+                        <span class="font-medium text-gray-700">Delivered by:</span>
+                        <span class="text-gray-600">{{ order.delivered_by.user.get_full_name|default:"Not assigned" }}</span>
+                      </div>
+                      <div>
+                        <span class="font-medium text-gray-700">Delivered at:</span>
+                        <span class="text-gray-600">{{ order.delivered_at|date:"M d, Y" }} at {{ order.delivered_at|time:"h:i A" }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Order Timeline -->
+                <div class="mt-5 border-t border-orange-100 pt-5">
+                  <h4 class="text-sm font-semibold text-orange-700 mb-3">Order Timeline</h4>
+                  <div class="flex justify-between relative">
+                    <div class="absolute top-3 left-0 right-0 h-1 bg-orange-200 z-0"></div>
+                    
+                    <!-- Order Received -->
+                    <div class="relative z-10 flex flex-col items-center">
+                      <div class="w-7 h-7 rounded-full bg-orange-600 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zm0 16a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                        </svg>
+                      </div>
+                      <p class="text-xs font-medium text-gray-700 mt-1">Received</p>
+                      <p class="text-[10px] text-gray-500">{{ order.received_at|time:"h:i A" }}</p>
+                    </div>
+                    
+                    <!-- Cooking Started -->
+                    <div class="relative z-10 flex flex-col items-center">
+                      <div class="w-7 h-7 rounded-full {% if order.is_started %}bg-orange-600{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 {% if order.is_started %}text-white{% else %}text-gray-500{% endif %}" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M12.395 2.553a1 1 0 00-1.45-.385c-.345.23-.614.558-.822.88-.214.33-.403.713-.57 1.116-.334.804-.614 1.768-.84 2.734a31.365 31.365 0 00-.613 3.58 2.64 2.64 0 01-.945-1.067c-.328-.68-.398-1.534-.398-2.654A1 1 0 005.05 6.05 6.981 6.981 0 003 11a7 7 0 1011.95-4.95c-.592-.591-.98-.985-1.348-1.467-.363-.476-.724-1.063-1.207-2.03zM12.12 15.12A3 3 0 017 13s.879.5 2.5.5c0-1 .5-4 1.25-4.5.5 1 .786 1.293 1.371 1.879A2.99 2.99 0 0113 13a2.99 2.99 0 01-.879 2.121z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <p class="text-xs font-medium {% if order.is_started %}text-gray-700{% else %}text-gray-400{% endif %} mt-1">Cooking</p>
+                      {% if order.started_at %}<p class="text-[10px] text-gray-500">{{ order.started_at|time:"h:i A" }}</p>{% endif %}
+                    </div>
+                    
+                    <!-- Cooking Completed -->
+                    <div class="relative z-10 flex flex-col items-center">
+                      <div class="w-7 h-7 rounded-full {% if order.is_cooking_completed %}bg-orange-600{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 {% if order.is_cooking_completed %}text-white{% else %}text-gray-500{% endif %}" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+                          <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <p class="text-xs font-medium {% if order.is_cooking_completed %}text-gray-700{% else %}text-gray-400{% endif %} mt-1">Ready</p>
+                      {% if order.cooking_completed_at %}<p class="text-[10px] text-gray-500">{{ order.cooking_completed_at|time:"h:i A" }}</p>{% endif %}
+                    </div>
+                    
+                    <!-- Out for Delivery -->
+                    <div class="relative z-10 flex flex-col items-center">
+                      <div class="w-7 h-7 rounded-full {% if order.is_out_for_delivery %}bg-orange-600{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 {% if order.is_out_for_delivery %}text-white{% else %}text-gray-500{% endif %}" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                          <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7h1a1 1 0 011 1v6.05A2.5 2.5 0 0014.95 16H14a1 1 0 01-1-1v-2a1 1 0 00-1-1h-1a1 1 0 00-1 1v2a1 1 0 01-1 1h-1.05a2.5 2.5 0 01-4.9 0H3a1 1 0 01-1-1V5a1 1 0 011-1h6a1 1 0 011 1v2a1 1 0 001 1h1a1 1 0 001-1V7z" />
+                        </svg>
+                      </div>
+                      <p class="text-xs font-medium {% if order.is_out_for_delivery %}text-gray-700{% else %}text-gray-400{% endif %} mt-1">Shipped</p>
+                      {% if order.out_for_delivery_at %}<p class="text-[10px] text-gray-500">{{ order.out_for_delivery_at|time:"h:i A" }}</p>{% endif %}
+                    </div>
+                    
+                    <!-- Delivered -->
+                    <div class="relative z-10 flex flex-col items-center">
+                      <div class="w-7 h-7 rounded-full {% if order.is_delivered %}bg-orange-600{% else %}bg-gray-300{% endif %} flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 {% if order.is_delivered %}text-white{% else %}text-gray-500{% endif %}" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                      </div>
+                      <p class="text-xs font-medium {% if order.is_delivered %}text-gray-700{% else %}text-gray-400{% endif %} mt-1">Delivered</p>
+                      {% if order.delivered_at %}<p class="text-[10px] text-gray-500">{{ order.delivered_at|time:"h:i A" }}</p>{% endif %}
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="mt-4 flex justify-end gap-2">
+                  <button class="text-sm py-1.5 px-4 border border-orange-500 text-orange-600 rounded-lg hover:bg-orange-50 transition-colors">
+                    Print Receipt
+                  </button>
+                  <button class="text-sm py-1.5 px-4 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors">
+                    View Details
+                  </button>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Pagination -->
+          <div class="mt-8 flex justify-center">
+            <nav class="inline-flex rounded-md shadow-sm">
+              <a href="#" class="py-2 px-4 border border-gray-300 rounded-l-md text-sm font-medium text-orange-600 hover:bg-orange-50">
+                Previous
+              </a>
+              <a href="#" class="py-2 px-4 border-t border-b border-gray-300 text-sm font-medium bg-orange-50 text-orange-700">
+                1
+              </a>
+              <a href="#" class="py-2 px-4 border-t border-b border-gray-300 text-sm font-medium text-orange-600 hover:bg-orange-50">
+                2
+              </a>
+              <a href="#" class="py-2 px-4 border border-gray-300 rounded-r-md text-sm font-medium text-orange-600 hover:bg-orange-50">
+                Next
+              </a>
+            </nav>
+          </div>
+          {% else %}
+          <div class="text-center py-12">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-orange-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="text-lg font-medium text-gray-700 mb-1">No completed orders yet</h3>
+            <p class="text-gray-500">Completed orders will appear here once customers receive their food.</p>
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Add some simple JavaScript for search functionality -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('order-search');
+    const orderCards = document.querySelectorAll('.order-card');
+    
+    if (searchInput) {
+      searchInput.addEventListener('input', function() {
+        const searchValue = this.value.toLowerCase();
+        
+        orderCards.forEach(function(card) {
+          const cardText = card.textContent.toLowerCase();
+          if (cardText.includes(searchValue)) {
+            card.style.display = 'block';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    }
+  });
+</script>
 
 {% endblock admindashboard %}

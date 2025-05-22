@@ -341,6 +341,25 @@
               {% endif %}
             </div>
           </div>`;
+          // Animate on scroll using Intersection Observer
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  entry.target.classList.add("show");
+                  observer.unobserve(entry.target); // Optional: remove observer after shown
+                }
+              });
+            },
+            {
+              threshold: 0.1,
+            }
+          );
+
+          // Attach observer to all new cards
+          document.querySelectorAll(".cuisine-card").forEach((card) => {
+            observer.observe(card);
+          });
           cuisineGrid.insertAdjacentHTML("beforeend", card);
         });
 

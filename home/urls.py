@@ -21,5 +21,6 @@ urlpatterns = [
     path('create_razorpay_order/', create_razorpay_order, name='create_razorpay_order'),
     path('payment_success/', payment_success, name='payment_success'),
     path('create_cod_order/', create_cod_order, name='create_cod_order'),
+    path('fetch-cuisines/', fetch_cuisine_btn, name='fetch_cuisine_btn'),
 
 ]

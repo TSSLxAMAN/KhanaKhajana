@@ -31,6 +31,27 @@ def cuisine(request):
     cuisines = Cuisine.objects.all()
     return render(request, 'home/cuisine.html',{"cuisines":cuisines})
 
+from django.http import JsonResponse
+from .models import Cuisine
+
+def fetch_cuisine_btn(request):
+    if request.method == "GET":
+        cuisines = Cuisine.objects.all()
+        cuisine_data = []
+        for cuisine in cuisines:
+            cuisine_data.append({
+                "id": str(cuisine.id),
+                "name": cuisine.cusine_name,
+                "description": cuisine.cusine_description,
+                "type": cuisine.type,
+                "region": cuisine.region,
+                "price": cuisine.price,
+                "time": cuisine.time,
+                "image_url": cuisine.cusine_image.url,
+            })
+        return JsonResponse({"cuisines": cuisine_data}, status=200)
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
 def aboutus(request):
     return render(request, 'home/aboutus.html')
 
@@ -200,6 +221,30 @@ def cart_items_quantity_increase(request):
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
+def fetch_cuisine_btn(request):
+    cuisine_type = request.GET.get('type')  # 'VEG', 'NON VEG', or None
+    if cuisine_type == 'VEG':
+        cuisines = Cuisine.objects.filter(type='VEG')
+    elif cuisine_type == 'NON VEG':
+        cuisines = Cuisine.objects.filter(type='NON VEG')
+    else:
+        cuisines = Cuisine.objects.all()
+
+    cuisine_data = [
+        {
+            'id': c.id,
+            'name': c.cusine_name,
+            'description': c.cusine_description,
+            'type': c.type,
+            'region': c.region,
+            'price': c.price,
+            'time': c.time,
+            'image_url': c.cusine_image.url,
+        }
+        for c in cuisines
+    ]
+    return JsonResponse({'cuisines': cuisine_data})
 
 @login_required(login_url='/accounts/login')
 def cart_items_quantity_decrease(request):

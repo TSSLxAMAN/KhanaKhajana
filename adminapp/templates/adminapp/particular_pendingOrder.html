@@ -599,6 +599,8 @@
 
 <script>
   document.addEventListener("click", function (event) {
+    let currentTime3 = new Date();
+    console.log(currentTime3);
     const sendBtn = event.target.closest("#out_for_delivery");
     if (!sendBtn) return;
 
@@ -624,7 +626,10 @@
     })
       .then((response) => response.json())
       .then((data) => {
+        let currentTime = new Date();
+        console.log(currentTime);
         if (data.success) {
+          console.log(data)
           sendBtn.remove()
 
           const progressBar = document.querySelector("#progressBar");
@@ -679,7 +684,9 @@
             </svg>`;
           step2Circle.classList.remove("bg-orange-100", "text-orange-400");
           step2Circle.classList.add("bg-orange-600", "text-white");
-
+          let currentTime2 = new Date();
+          console.log(currentTime2);
+          
         } else {
           alert("Failed to send for delivery.");
         }

@@ -15,7 +15,7 @@ from django.db.models.functions import TruncDate
 from django.utils.timezone import now
 from xhtml2pdf import pisa
 
-
+from KhanaKhajana.celery import send_driver_email
 from .forms import Cuisine_Form, DriverForm
 from .models import *
 
@@ -246,25 +246,27 @@ def complete_cooking(request):
             return JsonResponse({'success': False,'error': str(e)}, status=400)
     return JsonResponse({'error': 'Invalid request'}, status=400)
 
+import datetime
 @never_cache
 @login_required(login_url='/accounts/login')
 def send_for_delivery(request):
+    now = datetime.datetime.now()
+    print(now.time())
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             order_id = data.get("order_id")
             driver_id = data.get("driver_id")
-            order = OrderCreated.objects.get(id=order_id)
+
+            # Fetch and update order info
+            order = OrderCreated.objects.select_related("delivered_by").get(id=order_id)
+            driver = Driver.objects.get(id=driver_id)
             order.is_out_for_delivery = True
             order.out_for_delivery_at = timezone.now()
-            driver = Driver.objects.get(id=driver_id)
-            order_otp = order.delivery_otp
             order.delivered_by = driver
-            order.save()
-            formatted_time = localtime(order.started_at).strftime('%b %d, %Y • %I:%M %p')
+            order.save(update_fields=["is_out_for_delivery", "out_for_delivery_at", "delivered_by"])
 
-            driver_email = driver.driver_email
-
+            # Send mail async
             subject = f"New Delivery Assigned - Order #{order_id}"
             message = f"""
                 Hi {driver.driver_name},
@@ -278,15 +280,26 @@ def send_for_delivery(request):
                 Regards,
                 Delivery Management Team
             """
-            send_mail(subject, message, from_email='ramdomlassi@gmail.com',recipient_list=[driver_email])
+            print("Sending email task...")
+            task_result = send_driver_email.delay(subject, message, 'ramdomlassi@gmail.com', [driver.driver_email])
+            print("Task queued:", task_result)
 
+            now2 = datetime.datetime.now()
+            print(now2.time())
+            # Respond immediately
+            return JsonResponse({
+                'success': True,
+                'started_at': localtime(order.started_at).strftime('%b %d, %Y • %I:%M %p'),
+                'driver': {'name': driver.driver_name},
+                'order_otp': order.delivery_otp,
+            })
 
-            return JsonResponse({'success': True,'started_at': formatted_time, 'driver': {'name' : driver.driver_name}, 'order_otp':order_otp})
         except Exception as e:
             print("SEND MAIL ERROR:", str(e))
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
-        
+
     return JsonResponse({'error': 'Invalid request'}, status=400)
+
 
 def generate_receipt_pdf(request, order_id):
     order = get_object_or_404(OrderCreated, id=order_id)

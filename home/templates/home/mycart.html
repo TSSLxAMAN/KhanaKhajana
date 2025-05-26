@@ -1381,7 +1381,10 @@
     const paymentSelected = document.querySelector(
       'input[name="payment"]:checked'
     );
-    if (paymentSelected && paymentSelected.value === "UPI") {
+    if (paymentSelected && paymentSelected.value === "UPI") { 
+      const now = new Date();
+      console.log(now)
+      
       fetch("/create_razorpay_order/", {
         method: "POST",
         headers: {
@@ -1400,7 +1403,6 @@
               description: "Order Payment",
               order_id: data.order_id,
               handler: function (response) {
-                alert("Payment Successful!");
                 window.location.href =
                   "/payment_success/?payment_id=" +
                   response.razorpay_payment_id;
@@ -1415,6 +1417,9 @@
             alert("Failed to create Razorpay order.");
           }
         });
+        const now2 = new Date();
+        console.log(now2)
+  
     }
   });
 
@@ -1433,7 +1438,6 @@
         .then((res) => res.json())
         .then((data) => {
           if (data.success) {
-            alert("Order placed successfully with Cash on Delivery!");
             window.location.href = "/myorders/";
           } else {
             alert("Failed to place COD order.");

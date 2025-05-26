@@ -12,7 +12,7 @@ from .utils import send_otp_via_sms
 
 from .forms import CustomSetPasswordForm
 from .forms import SetAddressForm, SetMobileForm
-
+from KhanaKhajana.celery import send_otp_sms_async
 from .models import *
 
 from adminapp.models import Cuisine, UserProfile, OrderCreated, OrderItem
@@ -30,9 +30,6 @@ def homepage(request):
 def cuisine(request):
     cuisines = Cuisine.objects.all()
     return render(request, 'home/cuisine.html',{"cuisines":cuisines})
-
-from django.http import JsonResponse
-from .models import Cuisine
 
 def fetch_cuisine_btn(request):
     if request.method == "GET":
@@ -68,7 +65,7 @@ def myorders(request, order_id=None):
         order_created = get_object_or_404(OrderCreated, id=order_id, user=request.user, is_cancelled=False)
         return render(request, 'home/particular_order.html', {'order_created': order_created})
     else:
-        all_orders = OrderCreated.objects.filter(user=request.user,is_cancelled=False).order_by('-order_date')
+        all_orders = OrderCreated.objects.filter(user=request.user,is_cancelled=False)
         return render(request, 'home/myorders.html', {'orders': all_orders})
 
 @login_required(login_url='/accounts/login')
@@ -91,7 +88,6 @@ def cancel_order_by_user(request):
     except Exception as e:
         return redirect('myorders')
        
-
 @never_cache
 @login_required(login_url='/accounts/login')
 def dashboard(request):
@@ -154,7 +150,6 @@ def dashboard(request):
         'avg_order_value': avg_order_value,
     })
 
-
 @never_cache
 @login_required(login_url='/accounts/login')
 def mycart(request):
@@ -175,7 +170,6 @@ def mycart(request):
     except UserCart.DoesNotExist:
         is_empty = True
     return render(request, 'home/mycart.html',{'is_empty': is_empty, 'cart_items': cart_items, 'cuisines':cuisines, 'user_address':user_address, 'user_number':user_number})
-
 
 @login_required(login_url='/accounts/login')
 def get_cart_data_json(request):
@@ -368,8 +362,12 @@ def create_razorpay_order(request):
             return JsonResponse({"success": False, "error": "Cart not found."})
     return JsonResponse({"success": False, "error": "Invalid request."})
 
+import datetime
+
 @login_required(login_url='/accounts/login')
 def payment_success(request):
+    current_time3 = datetime.datetime.now()
+    print(current_time3)
     payment_id = request.GET.get('payment_id')
     user_info = UserProfile.objects.get(user=request.user)
     address = user_info.address
@@ -393,7 +391,6 @@ def payment_success(request):
             delivery_otp=otp,
         )
 
-        sms_response = send_otp_via_sms(mobile_number, otp)
         
         for item in cart_items:
             OrderItem.objects.create(
@@ -405,6 +402,14 @@ def payment_success(request):
         user_cart.is_ordered = True
         user_cart.save()
         cart_items.delete()
+
+        current_time = datetime.datetime.now()
+        print(current_time)
+
+        send_otp_sms_async.delay(mobile_number, otp)
+
+        current_time2 = datetime.datetime.now()
+        print(current_time2)
 
         messages.success(request, "Payment successful! Order placed.")
         return redirect('myorders')
@@ -440,7 +445,6 @@ def create_cod_order(request):
                 delivery_otp=otp,
             )
             
-            sms_response = send_otp_via_sms(mobile_number, (otp))
 
             for item in cart_items:
                 OrderItem.objects.create(
@@ -452,6 +456,8 @@ def create_cod_order(request):
             user_cart.is_ordered = True
             user_cart.save()
             cart_items.delete()
+
+            send_otp_sms_async.delay(mobile_number, otp)
 
             return JsonResponse({"success": True})
         except UserCart.DoesNotExist:

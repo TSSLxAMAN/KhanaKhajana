@@ -26,6 +26,14 @@ import json
 @login_required(login_url='/accounts/login')
 def adminDashboard(request):
     cuisines = Cuisine.objects.all()
+    total_revenue = OrderCreated.objects.filter(is_paid=True).aggregate(
+        total=Sum('total_amount'))['total'] or 0
+    
+    ordersCompleted = OrderCreated.objects.filter(is_delivered=True,is_paid=True).count()
+
+    pendingOrders = OrderCreated.objects.filter(is_received=True,is_started=True).count()
+
+    total_cuisine = Cuisine.objects.all().count()
 
     if request.method == 'POST':
         cuisine_id = request.POST.get('cuisine_id')
@@ -43,7 +51,11 @@ def adminDashboard(request):
 
     return render(request, 'adminapp/adminDashboard.html', {
         "cuisines": cuisines,
-        "form": form
+        "form": form,
+        "total_revenue": total_revenue,
+        'ordersCompleted':ordersCompleted,
+        "pendingOrders":pendingOrders,
+        "total_cuisine":total_cuisine
     })
 
 @never_cache

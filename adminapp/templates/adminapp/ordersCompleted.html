@@ -93,7 +93,7 @@
                       </div>
                       <div>
                         <span class="font-medium text-gray-700">Delivered by:</span>
-                        <span class="text-gray-600">{{ order.delivered_by.user.get_full_name|default:"Not assigned" }}</span>
+                        <span class="text-gray-600">{{ order.delivered_by|default:"Not assigned" }}</span>
                       </div>
                       <div>
                         <span class="font-medium text-gray-700">Delivered at:</span>

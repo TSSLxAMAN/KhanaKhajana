@@ -33,7 +33,7 @@
                         height="35"
                         width="35"
                       />
-                      2500
+                      {{ total_revenue }}
                     </div>
                     <div class="mt-5">
                       <button
@@ -55,7 +55,7 @@
                         height="12"
                         width="32"
                       />
-                      60
+                      {{ ordersCompleted }}
                     </div>
                     <div class="mt-5">
                       <button
@@ -77,7 +77,7 @@
                         height="35"
                         width="35"
                       />
-                      40
+                      {{ pendingOrders }}
                     </div>
                     <div class="mt-5">
                       <button
@@ -99,7 +99,7 @@
                         height="35"
                         width="35"
                       />
-                      15
+                      {{ total_cuisine }}
                     </div>
                     <div class="mt-5">
                       <button
@@ -111,42 +111,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {% comment %} Monthly Subscription {% endcomment %}
-              <div class="grid grid-cols-4 gap-4 mt-3">
-                <div class="col-span-2">
-                  <div
-                    class="p-4 bg-gradient-to-r from-orange-600 to-orange-400 rounded-xl text-white"
-                  >
-                    <div class="font-bold text-xl leading-none">
-                      Monthly Orders - June
-                    </div>
-                    <div class="mt-2">150 orders this month</div>
-                  </div>
-                </div>
-                <div class="col-span-2">
-                  <div
-                    class="p-4 bg-gradient-to-r from-orange-600 to-orange-400 rounded-xl text-white"
-                  >
-                    <div class="font-bold text-xl leading-none">
-                      Monthly New Users - June
-                    </div>
-                    <div class="mt-2">15 new users this month</div>
-                  </div>
-                </div>
-              </div>
-
-              <p class="text-2xl font-bold mb-4 text-orange-800 mt-4">
-                This Month Order Overview - June
-              </p>
-
-              {% comment %} Chart {% endcomment %}
-              <div
-                class="w-full max-w-4xl mx-auto p-4 bg-white rounded-xl shadow"
-              >
-                <canvas id="ordersChart" class="w-full h-64"></canvas>
-              </div>
+              </div>             
 
               <p class="text-2xl font-bold mb-4 text-orange-800 mt-4">
                 Avliable Cusine
